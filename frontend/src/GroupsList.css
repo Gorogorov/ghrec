@@ -1,0 +1,12 @@
+.groups-list-scrollable {
+    overflow: scroll;
+    height: 100%;
+    scrollbar-color: #202020 #d0d0d0;
+    width: 100%;
+    position: relative;
+}
+
+.icon-add-group:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}

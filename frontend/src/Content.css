@@ -1,0 +1,10 @@
+.groups-list-container {
+    height: calc(100vh - 50px);
+    background-color: #f7f7f7;
+}
+
+.repositories-list-container {
+    height: calc(100vh - 50px);
+    background-color: #f1f1f1;
+    width: 25rem;
+}

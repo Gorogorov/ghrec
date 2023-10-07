@@ -1,0 +1,17 @@
+query {
+  user(login: "{{github_username}}") {
+    starredRepositories {
+      edges {
+        node {
+          name
+          description
+          url
+          stargazerCount
+          owner {
+            login
+          }
+        }
+      }
+    }
+  }
+}

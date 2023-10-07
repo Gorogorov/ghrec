@@ -1,0 +1,18 @@
+.ghrec-auth-nav{
+    margin-bottom: 20px;
+}
+
+.ghrec-signin-form{
+    justify-content: center;
+    display: flex;
+    background-color: white;
+    border-radius: 20px;
+}
+
+.signin-form-title{
+    margin-bottom: 30px;
+}
+
+.btn.btn-lg{
+    border-radius: 20px;
+}

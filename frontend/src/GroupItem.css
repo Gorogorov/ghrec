@@ -1,0 +1,22 @@
+.group-rep-link{
+    text-decoration: none;
+}
+
+
+.rep-remove-btn {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .70rem;
+}
+.group-remove-btn {
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-padding-x: .5rem;
+    --bs-btn-font-size: .99rem;
+}
+
+.group-item-repository-fitted {
+    align-items: center;
+    width: fit-content;
+    border-radius: 4px;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+}

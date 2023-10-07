@@ -1,0 +1,7 @@
+// Override default variables before the import
+$input-focus-border-color: rgba(#101010, .5) !default;
+$input-focus-box-shadow: 0 0 0 .2rem rgba(#101010, .1) !default;
+$btn-focus-border-color: rgba(#101010, .5) !default;
+$btn-focus-box-shadow: 0 0 0 .2rem rgba(#101010, .1) !default;
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';

@@ -1,0 +1,23 @@
+query {
+  repository(owner:"{{repository_owner}}", name:"{{repository_name}}") {
+    stargazers(first:{{stargazers_batch_size}} {{after_end_cursor}}) {
+      edges {
+        node {
+          starredRepositories {
+            edges {
+              node {
+                name
+                url
+              }
+            }
+            isOverLimit
+          }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}

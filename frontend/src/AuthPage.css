@@ -1,0 +1,4 @@
+.ghrec-auth-layout{
+    background: radial-gradient(49% 81% at 45% 47%, #000000FF 0%, #073AFF00 100%),radial-gradient(113% 91% at 17% -2%, #231700FF 1%, #FF000000 99%),radial-gradient(142% 91% at 83% 7%, #352A00FF 1%, #FF000000 99%),radial-gradient(142% 91% at -6% 74%, #1D060CFF 1%, #FF000000 99%),radial-gradient(142% 91% at 111% 84%, #131300FF 0%, #480C0CFF 100%);
+    height: 100vh;
+}

@@ -1,0 +1,10 @@
+.create-group-form {
+    background-color: #f0f0f0;
+    width: 38%;
+    left: 62%;
+    z-index: 10;
+    position: absolute;
+    border-bottom-left-radius: 6px;
+    box-shadow: 2px 2px #bbbbbb;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}

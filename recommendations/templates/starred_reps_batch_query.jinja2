@@ -1,0 +1,24 @@
+query {
+  {% for alias, user_data in users_batch.items() %}
+    {{alias}}: user(login:"{{user_data['login']}}") {
+      starredRepositories(first:{{reps_batch_size}} {{user_data['reps_cursor']}}) {
+        edges {
+          node {
+            name
+            owner {
+              login
+            }
+            description
+            url
+            stargazerCount
+          }
+        }
+        totalCount
+        pageInfo {
+          endCursor
+          hasNextPage
+        }
+      }
+    }
+  {% endfor %}
+}
