@@ -16,8 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from recommendations.views import authenticate, repositories_and_groups
-from django.urls import re_path
-from rest_framework_simplejwt import views as jwt_views
 
 
 urlpatterns = [
@@ -26,8 +24,6 @@ urlpatterns = [
     path('api/auth/token/refresh/', authenticate.CookieTokenRefreshView.as_view(), name="token_refresh"),
     path('api/auth/register/', authenticate.register, name="register"),
     path('api/auth/logout/', authenticate.logout),
-    path('api/recommendations/', repositories_and_groups.customers_list),
-	re_path(r'^api/recommendations/(?P<pk>[0-9]+)/$', repositories_and_groups.customers_detail),
     path('api/user/repositories/', repositories_and_groups.user_repositories),
     path('api/user/groups/', repositories_and_groups.user_groups_list),
     path('api/user/groups/<str:group_name>/', repositories_and_groups.user_group),
