@@ -9,7 +9,10 @@ def enforce_csrf(request):
     """
     Enforce CSRF validation.
     """
-    check = CSRFCheck()
+    def dummy_get_response(request):  # pragma: no cover
+        return None
+
+    check = CSRFCheck(dummy_get_response)
     # populates request.META['CSRF_COOKIE'], which is used in process_view()
     check.process_request(request)
     reason = check.process_view(request, None, (), {})

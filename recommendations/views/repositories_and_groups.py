@@ -132,13 +132,8 @@ def user_repositories(request):
     if request.method == "GET":
         reps_per_page = 30
         response_data = {}
-        print("imhere")
-        print(request.user.id, type(request.user.id))
-        print(GHUser.objects.get(pk=request.user.id).repositories)
+
         ghuser_repositories = GHUser.objects.get(pk=request.user.id).repositories.all()
-        print("imhere2")
-        print(ghuser_repositories)
-        print("imhere3")
 
         ghuser_repositories_paginator = Paginator(
             ghuser_repositories, per_page=reps_per_page
@@ -272,7 +267,7 @@ def compute_recommendations(request, group_name):
     Retrieve user groups, create new group.
     """
     try:
-        ghuser = GHUser.objects.get(pk=request.user.id)
+        GHUser.objects.get(pk=request.user.id)
     except GHUser.DoesNotExist:
         return Response(
             {"detail": "User model does not exist."}, status=status.HTTP_404_NOT_FOUND
@@ -297,7 +292,7 @@ def compute_recommendations(request, group_name):
         )
 
     if request.method == "GET":
-        task_result = cltask_starred_repositories_of_stargazers(ghuser, ghgroup)
+        task_result = cltask_starred_repositories_of_stargazers(ghgroup)
         print(task_result)
         return Response(
             # {"celery_task_id": task_result.task_id}, status=status.HTTP_202_ACCEPTED
