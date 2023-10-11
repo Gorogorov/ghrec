@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from recommendations.models import GHUser, GHRepository, GHRepositoryGroup
+from recommendations.models import (
+    GHUser, 
+    GHRepository, 
+    GHRepositoryGroup,
+    GHRecommendedRepository,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -100,3 +105,11 @@ class RepositoryGroupSerializer(serializers.ModelSerializer):
             "repositories_url",
         )
         read_only_fields = ("created_at", "recommendations_status")
+
+
+class RecommendedRepositorySerializer(serializers.ModelSerializer):
+    repository = DynamicRepositorySerializer()
+    
+    class Meta:
+        model = GHRecommendedRepository
+        fields = ("repository", "num_of_hits")

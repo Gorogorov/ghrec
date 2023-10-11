@@ -7,6 +7,8 @@ from recommendations.github_gql_queries import gh_get_user_starred_repositories,
 from recommendations.models import GHUser, GHRepository, GHRecommendedRepository
 
 
+logger = logging.getLogger(__name__)
+
 @clapp.task
 def cltask_user_starred_repositories(username, github_username):
     try:
@@ -43,14 +45,17 @@ def cltask_user_starred_repositories(username, github_username):
         user.last_reps_update = timezone.now()
         user.save()
     except GHUser.DoesNotExist:
-        logging.exception("Tried to retrieve starred repositories for non-existing user '%s'" % username)
+        logger.exception("Tried to retrieve starred repositories "
+                         f"for non-existing user {username}")
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
 
 
 @clapp.task
 def cltask_starred_repositories_of_stargazers(ghgroup):
     batch_size=8
+    ghgroup.recommendations_status = "P"
+    ghgroup.save()
     try:
         group_repositories = ghgroup.repositories
         stargazers_starred_reps = gh_get_starred_repositories_of_stargazers(group_repositories,
@@ -87,5 +92,9 @@ def cltask_starred_repositories_of_stargazers(ghgroup):
                                                     unique_fields=["repository",
                                                                    "group"],
                                                     update_fields=["num_of_hits"])
+        ghgroup.recommendations_status = "C"
+        ghgroup.save()
     except Exception as e:
-        logging.exception(e)
+        ghgroup.recommendations_status = "N"
+        ghgroup.save()
+        logger.exception(e)

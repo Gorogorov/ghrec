@@ -6,16 +6,20 @@ import jinja2
 
 token = "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"
 url = "https://api.github.com/graphql"
+logger = logging.getLogger(__name__)
 
 class GhApiException(Exception):
     """Base github api error."""
     pass
 
 def ghapi_reset_timestamp(headers):
-    """Return reset timestamp if github requests rate limit exceeded."""
+    """Return reset timestamp if github api requests rate limit exceeded."""
     ghapi_requests_remaining = int(headers["X-RateLimit-Remaining"])
     ghapi_requests_reset = int(headers["X-RateLimit-Reset"])
     if ghapi_requests_remaining < 1:
+        logger.warning("Github api requests rate limit exceeded, "
+                        f"current timestamp: {str(time.time())}, "
+                        f"api reset timestamp: {str(ghapi_reset_timestamp)}")
         return ghapi_requests_reset
     return None
 
@@ -68,6 +72,9 @@ def gh_get_stargazers(repository, github_query_template, head):
             if stargazers_batch_response.status_code == 200:
                 is_response_ok = True
             else:
+                logger.warning("gh_get_stargazers: batch size decresing from "
+                                f"{str(github_query_vars['stargazers_batch_size'])} "
+                                f"to {str(int(github_query_vars['stargazers_batch_size'] / 2))}")
                 github_query_vars["stargazers_batch_size"] = int(github_query_vars["stargazers_batch_size"] / 2)
 
         if not is_response_ok:
@@ -116,6 +123,9 @@ def gh_get_starred_reps_list(users_login, users_batch_size, github_query_templat
                 if starred_reps_batch_response.status_code == 200:
                     is_response_ok = True
                 else:
+                    logger.warning("gh_get_starred_reps_list: batch size decresing from "
+                                    f"{str(github_query_vars['reps_batch_size'])} "
+                                    f"to {str(int(github_query_vars['reps_batch_size'] / 2))}")
                     github_query_vars["reps_batch_size"] = int(github_query_vars["reps_batch_size"] / 2)
         
             if not is_response_ok:
@@ -143,7 +153,7 @@ def gh_get_starred_reps_list(users_login, users_batch_size, github_query_templat
                     )
                     github_query_vars["users_batch"][alias]["reps_cursor"] = reps_cursor
     for login, reps in users_starred_reps.items():
-        logging.info(f"User {login}: received {len(reps)} repositories")
+        logger.debug(f"User {login}: received {len(reps)} repositories")
     return users_starred_reps
 
 
