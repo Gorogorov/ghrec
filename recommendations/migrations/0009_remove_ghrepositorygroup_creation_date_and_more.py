@@ -6,44 +6,65 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0008_rename_user_id_ghrepositorygroup_user'),
+        ("recommendations", "0008_rename_user_id_ghrepositorygroup_user"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ghrepositorygroup',
-            name='creation_date',
+            model_name="ghrepositorygroup",
+            name="creation_date",
         ),
         migrations.AddField(
-            model_name='ghrepositorygroup',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="ghrepositorygroup",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='ghrepositorygroup',
-            name='is_recommendations_calculated',
+            model_name="ghrepositorygroup",
+            name="is_recommendations_calculated",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='ghrepository',
-            name='url',
+            model_name="ghrepository",
+            name="url",
             field=models.URLField(max_length=2100, unique=True),
         ),
         migrations.AlterField(
-            model_name='ghuser',
-            name='username',
+            model_name="ghuser",
+            name="username",
             field=models.CharField(max_length=255, unique=True),
         ),
         migrations.CreateModel(
-            name='GHRecommendedRepository',
+            name="GHRecommendedRepository",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('num_of_hits', models.IntegerField()),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recommendations.ghrepositorygroup')),
-                ('repository', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recommendations.ghrepository')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("num_of_hits", models.IntegerField()),
+                (
+                    "group",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="recommendations.ghrepositorygroup",
+                    ),
+                ),
+                (
+                    "repository",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="recommendations.ghrepository",
+                    ),
+                ),
             ],
         ),
     ]

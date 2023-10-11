@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from recommendations.models import (
-    GHUser, 
-    GHRepository, 
+    GHUser,
+    GHRepository,
     GHRepositoryGroup,
     GHRecommendedRepository,
 )
@@ -109,7 +109,7 @@ class RepositoryGroupSerializer(serializers.ModelSerializer):
 
 class RecommendedRepositorySerializer(serializers.ModelSerializer):
     repository = DynamicRepositorySerializer()
-    
+
     class Meta:
         model = GHRecommendedRepository
         fields = ("repository", "num_of_hits")

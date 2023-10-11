@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0005_alter_ghrepository_description'),
+        ("recommendations", "0005_alter_ghrepository_description"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ghrepository',
-            name='owner',
-            field=models.CharField(default='gorogorov', max_length=255),
+            model_name="ghrepository",
+            name="owner",
+            field=models.CharField(default="gorogorov", max_length=255),
             preserve_default=False,
         ),
     ]

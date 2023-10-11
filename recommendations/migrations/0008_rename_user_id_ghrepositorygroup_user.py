@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0007_ghrepositorygroup_creation_date'),
+        ("recommendations", "0007_ghrepositorygroup_creation_date"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='ghrepositorygroup',
-            old_name='user_id',
-            new_name='user',
+            model_name="ghrepositorygroup",
+            old_name="user_id",
+            new_name="user",
         ),
     ]

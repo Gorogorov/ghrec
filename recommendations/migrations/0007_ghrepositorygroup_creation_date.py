@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0006_ghrepository_owner'),
+        ("recommendations", "0006_ghrepository_owner"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ghrepositorygroup',
-            name='creation_date',
+            model_name="ghrepositorygroup",
+            name="creation_date",
             field=models.DateTimeField(null=True),
         ),
     ]

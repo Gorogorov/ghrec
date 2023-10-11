@@ -4,19 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0013_alter_ghrecommendedrepository_options_and_more'),
+        ("recommendations", "0013_alter_ghrecommendedrepository_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ghrepositorygroup',
-            name='is_recommendations_calculated',
+            model_name="ghrepositorygroup",
+            name="is_recommendations_calculated",
         ),
         migrations.AddField(
-            model_name='ghrepositorygroup',
-            name='recommendations_status',
-            field=models.CharField(choices=[('N', 'Not Started'), ('P', 'In Progress'), ('C', 'Completed')], default='N', max_length=1),
+            model_name="ghrepositorygroup",
+            name="recommendations_status",
+            field=models.CharField(
+                choices=[
+                    ("N", "Not Started"),
+                    ("P", "In Progress"),
+                    ("C", "Completed"),
+                ],
+                default="N",
+                max_length=1,
+            ),
         ),
     ]

@@ -10,11 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.paginator import Paginator
 
-from recommendations.models import (
-    GHUser,
-    GHRepositoryGroup,
-    GHRecommendedRepository
-)
+from recommendations.models import GHUser, GHRepositoryGroup, GHRecommendedRepository
 from recommendations.serializers import RecommendedRepositorySerializer
 from recommendations.views.authenticate import JWTAuthenticationWithCookie
 from recommendations.tasks import cltask_starred_repositories_of_stargazers
@@ -60,8 +56,9 @@ def recommendations_list(request, group_name):
         response_data = {}
         ghgroup_rec_reps = GHRecommendedRepository.objects.filter(group=ghgroup)
 
-        ghgroup_rec_reps_paginator = Paginator(ghgroup_rec_reps,
-                                               per_page=groups_per_page)
+        ghgroup_rec_reps_paginator = Paginator(
+            ghgroup_rec_reps, per_page=groups_per_page
+        )
         page = request.query_params.get("page")
         if page is None:
             return Response(
@@ -115,11 +112,13 @@ def recommendations_compute(request, group_name):
 
     if request.method == "GET":
         task_result = cltask_starred_repositories_of_stargazers(ghgroup)
-        logger.info("Celery task submitted, "
-                     "name: cltask_starred_repositories_of_stargazers, "
-                     f"task_id: {task_result}")
+        logger.info(
+            "Celery task submitted, "
+            "name: cltask_starred_repositories_of_stargazers, "
+            f"task_id: {task_result}"
+        )
         return Response(
             # {"celery_task_id": task_result.task_id}, status=status.HTTP_202_ACCEPTED
-            {"celery_task_id": 0}, status=status.HTTP_202_ACCEPTED
+            {"celery_task_id": 0},
+            status=status.HTTP_202_ACCEPTED,
         )
-

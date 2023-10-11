@@ -4,14 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0014_remove_ghrepositorygroup_is_recommendations_calculated_and_more'),
+        (
+            "recommendations",
+            "0014_remove_ghrepositorygroup_is_recommendations_calculated_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='ghrecommendedrepository',
-            constraint=models.UniqueConstraint(fields=('repository', 'group'), name='unique_rep_group_combination'),
+            model_name="ghrecommendedrepository",
+            constraint=models.UniqueConstraint(
+                fields=("repository", "group"), name="unique_rep_group_combination"
+            ),
         ),
     ]

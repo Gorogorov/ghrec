@@ -55,8 +55,7 @@ class GHRecommendedRepository(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=["repository", "group"],
-                name="unique_rep_group_combination"
+                fields=["repository", "group"], name="unique_rep_group_combination"
             )
         ]
         ordering = ["-num_of_hits"]

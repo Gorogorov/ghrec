@@ -4,22 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0012_alter_ghrepositorygroup_unique_together_and_more'),
+        ("recommendations", "0012_alter_ghrepositorygroup_unique_together_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='ghrecommendedrepository',
-            options={'ordering': ['-num_of_hits']},
+            name="ghrecommendedrepository",
+            options={"ordering": ["-num_of_hits"]},
         ),
         migrations.AlterModelOptions(
-            name='ghrepository',
-            options={'ordering': ['name']},
+            name="ghrepository",
+            options={"ordering": ["name"]},
         ),
         migrations.AlterModelOptions(
-            name='ghrepositorygroup',
-            options={'ordering': ['-created_at']},
+            name="ghrepositorygroup",
+            options={"ordering": ["-created_at"]},
         ),
     ]

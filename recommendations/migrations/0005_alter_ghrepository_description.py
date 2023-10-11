@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0004_remove_ghuser_url_ghuser_github_username'),
+        ("recommendations", "0004_remove_ghuser_url_ghuser_github_username"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ghrepository',
-            name='description',
+            model_name="ghrepository",
+            name="description",
             field=models.TextField(default=None, null=True),
         ),
     ]

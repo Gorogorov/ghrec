@@ -4,18 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0011_ghrepositorygroup_recommended_repositories'),
+        ("recommendations", "0011_ghrepositorygroup_recommended_repositories"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='ghrepositorygroup',
+            name="ghrepositorygroup",
             unique_together=set(),
         ),
         migrations.AddConstraint(
-            model_name='ghrepositorygroup',
-            constraint=models.UniqueConstraint(fields=('name', 'user'), name='unique_name_user_combination'),
+            model_name="ghrepositorygroup",
+            constraint=models.UniqueConstraint(
+                fields=("name", "user"), name="unique_name_user_combination"
+            ),
         ),
     ]

@@ -8,13 +8,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.paginator import Paginator
 
-from recommendations.models import (
-    GHUser,
-    GHRepositoryGroup
-)
+from recommendations.models import GHUser, GHRepositoryGroup
 from recommendations.serializers import (
     RepositoryGroupSerializer,
-    DynamicRepositorySerializer
+    DynamicRepositorySerializer,
 )
 from recommendations.views.authenticate import JWTAuthenticationWithCookie
 

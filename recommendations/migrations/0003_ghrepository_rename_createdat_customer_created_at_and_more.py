@@ -5,44 +5,84 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recommendations', '0002_recommendations'),
+        ("recommendations", "0002_recommendations"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GHRepository',
+            name="GHRepository",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField()),
-                ('url', models.URLField(max_length=255)),
-                ('num_stars', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("description", models.TextField()),
+                ("url", models.URLField(max_length=255)),
+                ("num_stars", models.IntegerField()),
             ],
         ),
         migrations.RenameField(
-            model_name='customer',
-            old_name='createdAt',
-            new_name='created_at',
+            model_name="customer",
+            old_name="createdAt",
+            new_name="created_at",
         ),
         migrations.CreateModel(
-            name='GHUser',
+            name="GHUser",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('username', models.CharField(max_length=255)),
-                ('url', models.URLField(max_length=255)),
-                ('last_reps_update', models.DateTimeField(null=True)),
-                ('repositories', models.ManyToManyField(related_name='users', to='recommendations.ghrepository')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("username", models.CharField(max_length=255)),
+                ("url", models.URLField(max_length=255)),
+                ("last_reps_update", models.DateTimeField(null=True)),
+                (
+                    "repositories",
+                    models.ManyToManyField(
+                        related_name="users", to="recommendations.ghrepository"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GHRepositoryGroup',
+            name="GHRepositoryGroup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('repositories', models.ManyToManyField(related_name='groups', to='recommendations.ghrepository')),
-                ('user_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='groups', to='recommendations.ghuser')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "repositories",
+                    models.ManyToManyField(
+                        related_name="groups", to="recommendations.ghrepository"
+                    ),
+                ),
+                (
+                    "user_id",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="groups",
+                        to="recommendations.ghuser",
+                    ),
+                ),
             ],
         ),
     ]
