@@ -53,7 +53,7 @@ def cltask_user_starred_repositories(username, github_username):
 
 @clapp.task
 def cltask_starred_repositories_of_stargazers(ghgroup):
-    batch_size=8
+    batch_size=6
     ghgroup.recommendations_status = "P"
     ghgroup.save()
     try:

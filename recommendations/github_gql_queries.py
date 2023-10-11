@@ -50,6 +50,7 @@ def gh_get_user_starred_repositories(github_username):
 
 
 def gh_get_stargazers(repository, github_query_template, head):
+    logger.debug(f"Retrieving stargazers for repository {repository.name}")
     stargazers_batch_size = 100
     github_query_vars = {"repository_name": repository.name,
                         "repository_owner": repository.owner,
@@ -72,7 +73,7 @@ def gh_get_stargazers(repository, github_query_template, head):
             if stargazers_batch_response.status_code == 200:
                 is_response_ok = True
             else:
-                logger.warning("gh_get_stargazers: batch size decresing from "
+                logger.debug("gh_get_stargazers: batch size decresing from "
                                 f"{str(github_query_vars['stargazers_batch_size'])} "
                                 f"to {str(int(github_query_vars['stargazers_batch_size'] / 2))}")
                 github_query_vars["stargazers_batch_size"] = int(github_query_vars["stargazers_batch_size"] / 2)
@@ -93,67 +94,100 @@ def gh_get_stargazers(repository, github_query_template, head):
         has_next_stargazer = stargazers_batch["pageInfo"]["hasNextPage"]
         github_query_vars["stargazers_cursor"] = 'after: "' + stargazers_batch["pageInfo"]["endCursor"] + '"'
     
+    logger.debug(f"Retrieved stargazers for repository {repository.name}, "
+                 f"number of stagazers: {len(stargazers_login)}")
     return stargazers_login
 
 
 def gh_get_starred_reps_list(users_login, users_batch_size, github_query_template, head):
+    logger.debug("Retrieving repositories for stagazers, "
+                 f"number of stargazers: {len(users_login)}")
     reps_batch_size = 100
-    users_login_batches = [users_login[i:i+users_batch_size] for i in 
-                                    range(0, len(users_login), users_batch_size)]
-    login_to_alias = {users_login[i]: f"user{str(i)}"for i in range(len(users_login))}
+    # Maximum number of repositories for one user.
+    max_reps_th = 2500
     users_starred_reps = {login: [] for login in users_login}
-    for users_login_batch in users_login_batches:
-        users_batch = {login_to_alias[login]: 
-                               {"reps_cursor": "",
-                                "login": login}
-                       for login in users_login_batch
-        }
-        github_query_vars = {"users_batch": users_batch}
-        while len(github_query_vars["users_batch"]):
-            github_query_vars["reps_batch_size"] = reps_batch_size
 
-            is_response_ok = False
-            while not is_response_ok:
-                if github_query_vars["reps_batch_size"] == 0:
-                    break
-                starred_reps_batch_response = requests.post(url,
-                                                    json={"query": github_query_template.render(github_query_vars)},
-                                                    headers=head)
+    login_to_alias = {users_login[i]: f"user{str(i)}" for i in range(len(users_login))}
+    processing_users = {login_to_alias[login]: 
+                            {"reps_cursor": "",
+                            "login": login} 
+                        for login in users_login[:users_batch_size]}
+    next_user_ind = users_batch_size
+    total_users_num = len(users_login)
+    processed_users_num = 0
+    
 
-                if starred_reps_batch_response.status_code == 200:
-                    is_response_ok = True
-                else:
-                    logger.warning("gh_get_starred_reps_list: batch size decresing from "
-                                    f"{str(github_query_vars['reps_batch_size'])} "
-                                    f"to {str(int(github_query_vars['reps_batch_size'] / 2))}")
-                    github_query_vars["reps_batch_size"] = int(github_query_vars["reps_batch_size"] / 2)
+    while len(processing_users) > 0:
+        github_query_vars = {"users_batch": processing_users,
+                             "reps_batch_size": reps_batch_size}
+
+        is_response_ok = False
+        while not is_response_ok:
+            if github_query_vars["reps_batch_size"] == 0:
+                break
+            starred_reps_batch_response = requests.post(url,
+                                                json={"query": github_query_template.render(github_query_vars)},
+                                                headers=head)
+
+            if starred_reps_batch_response.status_code == 200:
+                is_response_ok = True
+            else:
+                logger.debug("gh_get_starred_reps_list: batch size decresing from "
+                                f"{str(github_query_vars['reps_batch_size'])} "
+                                f"to {str(int(github_query_vars['reps_batch_size'] / 2))}")
+                github_query_vars["reps_batch_size"] = int(github_query_vars["reps_batch_size"] / 2)
         
-            if not is_response_ok:
-                raise GhApiException("Get starred repositories: "
-                                     "github api error for batch size 1")
+        if not is_response_ok:
+            raise GhApiException("Get starred repositories: github api error for "
+                                 "repositories batch size 1. Latest github api "
+                                 f"response json: {starred_reps_batch_response.json()}, "
+                                 "status code: "
+                                 f"{str(starred_reps_batch_response.status_code)}.")
 
-            reset_ts = ghapi_reset_timestamp(starred_reps_batch_response.headers)
-            if reset_ts is not None:
-                time.sleep(reset_ts - time.time() + 1)
+        reset_ts = ghapi_reset_timestamp(starred_reps_batch_response.headers)
+        if reset_ts is not None:
+            time.sleep(reset_ts - time.time() + 1)
+            continue
+
+        for alias, user_data in starred_reps_batch_response.json()["data"].items():
+            login = processing_users[alias]["login"]
+            
+            # Don't add repositories of the user if 
+            # his number of repositories > max_reps_th
+            num_of_reps = user_data["starredRepositories"]["totalCount"]
+            if num_of_reps > max_reps_th:
+                del processing_users[alias]
+                del users_starred_reps[login]
+                processed_users_num += 1
+                logger.debug("Number of processed users: "
+                             f"{processed_users_num}/{total_users_num}")
                 continue
 
-            for alias, user_data in starred_reps_batch_response.json()["data"].items():
-                user_starred_reps_part = [rep["node"] for rep 
-                                          in user_data["starredRepositories"]["edges"]]
-                login = users_batch[alias]["login"]
-                users_starred_reps[login].extend(user_starred_reps_part)
+            user_starred_reps_part = [rep["node"] for rep 
+                                        in user_data["starredRepositories"]["edges"]]
+            users_starred_reps[login].extend(user_starred_reps_part)
 
-                has_next_page = user_data["starredRepositories"]["pageInfo"]["hasNextPage"]
-                if not has_next_page:
-                    del github_query_vars["users_batch"][alias]
-                else:
-                    reps_cursor = ('after: "' + 
-                                user_data["starredRepositories"]["pageInfo"]["endCursor"] + 
-                                '"'
-                    )
-                    github_query_vars["users_batch"][alias]["reps_cursor"] = reps_cursor
+            has_next_page = user_data["starredRepositories"]["pageInfo"]["hasNextPage"]
+            if not has_next_page:
+                del processing_users[alias]
+                processed_users_num += 1
+                logger.debug("Number of processed users: "
+                             f"{processed_users_num}/{total_users_num}")
+                if next_user_ind < total_users_num:
+                    next_login = users_login[next_user_ind]
+                    next_alias = login_to_alias[next_login]
+                    processing_users[next_alias] = {"login": next_login,
+                                                    "reps_cursor": ""}
+                    next_user_ind += 1
+            else:
+                reps_cursor = ('after: "' + 
+                            user_data["starredRepositories"]["pageInfo"]["endCursor"] + 
+                            '"'
+                )
+                processing_users[alias]["reps_cursor"] = reps_cursor
+    logger.debug(f"Retrieved repositories for stargazers")
     for login, reps in users_starred_reps.items():
-        logger.debug(f"User {login}: received {len(reps)} repositories")
+        logger.debug(f"Stargazer {login}: received {len(reps)} repositories")
     return users_starred_reps
 
 
