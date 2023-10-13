@@ -6,6 +6,7 @@ import AuthPage from './AuthPage';
 import SigninForm from './SigninForm';
 import SignupForm from './SignupForm';
 import Home from './Home'
+import RecommendationsPage from './RecommendationsPage'
 import Logout from './Logout'
 import RequireAuth from './RequireAuth'
 import './App.css';
@@ -18,10 +19,16 @@ const BaseLayout = () => (
       <Route path="/home/" element={
               <RequireAuth>
                 <Home/>
-              </RequireAuth>}>
-        {/* <Route path="/customer/:pk" element={<CustomerCreateUpdate/>}/>
-        <Route path="/customer/" exact element={<CustomerCreateUpdate/>}/> */}
-      </Route>
+              </RequireAuth>}
+      />
+      {/* <Route path="/customer/:pk" element={<CustomerCreateUpdate/>}/>
+      <Route path="/customer/" exact element={<CustomerCreateUpdate/>}/> */}
+      <Route path="/home/recommendations/:groupName/" 
+             element={
+                <RequireAuth>
+                  <RecommendationsPage/>
+                </RequireAuth>}
+      />
       <Route path="/logout/" element={
                               <RequireAuth>
                                 <Logout/>

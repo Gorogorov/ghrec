@@ -78,4 +78,13 @@ export default class CustomersService{
         const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/`);
         return AxiosApiInstance.delete(url);
     }
+
+	getGroupRecommendations(groupName, page) {
+		const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/recommendations/?page=${page}`);
+        return AxiosApiInstance.get(url).then(response => response.data);
+	}
+    computeRecommendations(groupName){
+        const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/recommendations/compute/`);
+        return AxiosApiInstance.get(url);
+    }
 }
