@@ -5,9 +5,9 @@ import { groupsSelectors, addGroup, addGroups, removeGroup, updateGroup } from '
 import {showCreateGroupForm, hideCreateGroupForm, reverseCreateGroupForm} from './createGroupSlice'
 import { useNotification } from './Notifications/useNotification';
 import './GroupCreate.css'
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function GroupCreate(props) {
     const [groupName, setGroupName] = useState("");
@@ -15,7 +15,7 @@ function GroupCreate(props) {
     const dispatch = useDispatch();
     
     function handleAddGroup(event) {
-        customersService.createUserGroup({
+        recommendationsService.createUserGroup({
             "name": groupName,
             "repositories_url": [],
         }).then((result)=>{

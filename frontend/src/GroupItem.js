@@ -4,10 +4,10 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { groupsSelectors, addGroup, addGroups, removeGroup, updateGroup } from './groupsSlice'
 import {useNotification} from './Notifications/useNotification';
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 import './GroupItem.css'
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 const groupRepColorPalette = ["rgba(22, 114, 136, 0.3)", "rgba(140, 218, 236, 0.3)",
                               "rgba(180, 82, 72, 0.3)", "rgba(212, 140, 132, 0.3)",
@@ -20,7 +20,7 @@ const GroupItem = memo(function GroupItem(props) {
     const dispatch = useDispatch();
 
     function handleRunRecommendations(event) {
-        // customersService.createCustomer(
+        // recommendationsService.compute(
         //   {
         //     "first_name": firstName,
         //     "last_name": lastName,
@@ -39,7 +39,7 @@ const GroupItem = memo(function GroupItem(props) {
     }
 
     function handleRemoveGroup(event) {
-        customersService.deleteUserGroup(
+        recommendationsService.deleteUserGroup(
             props.groupName
         ).then((result)=>{
             dispatch(removeGroup(props.groupName));
@@ -55,7 +55,7 @@ const GroupItem = memo(function GroupItem(props) {
             updatedGroupRepositories.splice(indexForRemove, 1);
         }
         let updatedGroupRepositoriesUrl = updatedGroupRepositories.map((rep) => rep["url"]);
-        customersService.updateUserGroup(
+        recommendationsService.updateUserGroup(
             props.groupName, {
                 "name": props.groupName,
                 "repositories_url": updatedGroupRepositoriesUrl,

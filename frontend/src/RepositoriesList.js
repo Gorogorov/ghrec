@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux'
 import { groupsSelectors } from './groupsSlice'
 
 import './RepositoriesList.css'
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 import RepositoryItem from './RepositoryItem';
 import LoadingSpinner from './LoadingSpinner';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 const List = ({ list, groupOptions, isPageLoading, handleScroll }) => (
   <div className="repositories-list-scrollable px-2 pt-1 pb-3" onScroll={handleScroll}>
@@ -51,7 +51,7 @@ function RepositoriesList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      customersService.getUserRepositories(userRepositoriesPage+1)
+      recommendationsService.getUserRepositories(userRepositoriesPage+1)
           .then((response) => onUpdateResult(response))
     }
 
@@ -66,7 +66,7 @@ function RepositoriesList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        customersService.getUserRepositories(userRepositoriesPage)
+        recommendationsService.getUserRepositories(userRepositoriesPage)
               .then((response) => onSetResult(response))
     }, []);
 

@@ -1,13 +1,13 @@
 import { Navigate, useLocation } from 'react-router-dom';
 
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function Logout() {
   const location = useLocation();
   if (localStorage.getItem("isAuthenticated") === "true") {
-    let logout_response = customersService.logout();
+    let logout_response = recommendationsService.logout();
     if (logout_response.error) {
       alert('There was a logout error! Please re-check your form.');
       return;

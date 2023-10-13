@@ -1,15 +1,11 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-
-// import CustomersService from './RecommendationsService';
-
-// const customersService = new CustomersService();
  
 function RequireAuth ({ children, requestAuthPage="false" }) {
     // function isUserAuthenticated() {
     //     let isAuthenticatedFlag = localStorage.getItem("isAuthenticated");
     //     if (isAuthenticatedFlag === null) {
-    //         customersService.refreshToken().then((result)=>{
+    //         recommendationsService.refreshToken().then((result)=>{
     //             localStorage.setItem("isAuthenticated", "true");
     //         }).catch((error)=>{
     //             if (error.status === 401) {

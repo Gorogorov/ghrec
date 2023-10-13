@@ -11,8 +11,6 @@ function Header() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav d-flex w-100 ps-2 pe-3">
-            <a className="nav-item nav-link p-2" href="/">CUSTOMERS</a>
-            <a className="nav-item nav-link p-2" href="/customer">CREATE CUSTOMER</a>
             <a className="nav-item nav-link p-2 ms-auto" href="/logout">Logout</a>
           </div>
         </div>

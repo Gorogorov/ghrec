@@ -4,10 +4,10 @@ import { useSelector, useDispatch } from 'react-redux'
 import { groupsSelectors, addGroup, addGroups, removeGroup, updateGroup } from './groupsSlice'
 
 import './RepositoryItem.css'
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 import {useNotification} from './Notifications/useNotification';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function RepositoryItem(props) {
     const [selectedGroupOption, setSelectedGroupOption] = useState('');
@@ -29,7 +29,7 @@ function RepositoryItem(props) {
             let newGroupRepository = {"name": props.title, "url": props.url};
             let updatedGroupRepositories = [...selectedGroupRepositories, newGroupRepository];
             let updatedGroupRepositoriesUrl = updatedGroupRepositories.map((rep) => rep["url"]);
-            customersService.updateUserGroup(
+            recommendationsService.updateUserGroup(
                 selectedGroupOption, {
                     "name": selectedGroupOption,
                     "repositories_url": updatedGroupRepositoriesUrl,

@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux'
 import { useParams, Link } from 'react-router-dom';
 
 import { groupsSelectors } from './groupsSlice'
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 import RecommendationItem from './RecommendationItem';
 import LoadingSpinner from './LoadingSpinner';
 import './RecommendationsList.css'
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 const List = ({ list, isPageLoading, handleScroll }) => (
   <div className="recommendations-list-scrollable px-2 pt-3 pb-3" onScroll={handleScroll}>
@@ -61,7 +61,7 @@ function RecommendationsList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      customersService.getGroupRecommendations(groupName, groupRecsPage+1)
+      recommendationsService.getGroupRecommendations(groupName, groupRecsPage+1)
           .then((response) => onUpdateResult(response))
     }
 
@@ -77,7 +77,7 @@ function RecommendationsList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        customersService.getGroupRecommendations(groupName, groupRecsPage)
+        recommendationsService.getGroupRecommendations(groupName, groupRecsPage)
               .then((response) => onSetResult(response))
     }, []);
 

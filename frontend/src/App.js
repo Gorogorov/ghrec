@@ -21,8 +21,6 @@ const BaseLayout = () => (
                 <Home/>
               </RequireAuth>}
       />
-      {/* <Route path="/customer/:pk" element={<CustomerCreateUpdate/>}/>
-      <Route path="/customer/" exact element={<CustomerCreateUpdate/>}/> */}
       <Route path="/home/recommendations/:groupName/" 
              element={
                 <RequireAuth>

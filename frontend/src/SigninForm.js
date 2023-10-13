@@ -3,9 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import './SigninForm.css'
 import {useNotification} from './Notifications/useNotification';
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function SigninForm() {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
@@ -26,7 +26,7 @@ function SigninForm() {
             else {
                 signinFormRequest["email"] = usernameOrEmail;
             }
-            customersService.login(signinFormRequest
+            recommendationsService.login(signinFormRequest
                 ).then((result)=>{
                     localStorage.setItem("isAuthenticated", "true");
                     navigate("/home");

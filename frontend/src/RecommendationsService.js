@@ -2,9 +2,7 @@ import axios from 'axios';
 import AxiosApiInstance from './AxiosApiInstance'
 const API_URL = 'http://localhost:8000';
 
-export default class CustomersService{
-	constructor(){}
-
+export default class RecommendationsService {
 	login(user_data) {
 		const url = `${API_URL}/api/auth/token/`;
 		return AxiosApiInstance.post(url, user_data).then(response => response.data);
@@ -21,32 +19,6 @@ export default class CustomersService{
 		const url = `${API_URL}/api/auth/logout/`;
 		return AxiosApiInstance.get(url).then(response => response.data);
 	}
-	
-	getCustomers() {
-		const url = `${API_URL}/api/recommendations/`;
-		return AxiosApiInstance.get(url).then(response => response.data);
-	}  
-	getCustomersByURL(link){
-		const url = `${API_URL}${link}`;
-		return AxiosApiInstance.get(url).then(response => response.data);
-	}
-	getCustomer(pk) {
-		const url = `${API_URL}/api/recommendations/${pk}/`;
-		return AxiosApiInstance.get(url).then(response => response.data);
-	}
-	deleteCustomer(customer){
-		const url = `${API_URL}/api/recommendations/${customer.pk}/`;
-		return AxiosApiInstance.delete(url);
-	}
-	createCustomer(customer){
-		const url = `${API_URL}/api/recommendations/`;
-		return AxiosApiInstance.post(url,customer);
-	}
-	updateCustomer(customer){
-		const url = `${API_URL}/api/recommendations/${customer.pk}/`;
-		return AxiosApiInstance.put(url,customer);
-	}
-
 
     getUserRepositories(page){
         const url = `${API_URL}/api/user/repositories/?page=${page}`;

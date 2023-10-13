@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 import './SignupForm.css'
 import {useNotification} from './Notifications/useNotification';
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function SignupForm() {
     const [username, setUsername] = useState('');
@@ -22,7 +22,7 @@ function SignupForm() {
 
     function handleSubmit(event) {
         if (signupFormValidation()) {
-            customersService.register(
+            recommendationsService.register(
                 {
                 "username": username,
                 "github_username": githubUsername,

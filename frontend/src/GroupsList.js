@@ -4,12 +4,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { groupsSelectors, addGroup, addGroups, removeGroup, updateGroup } from './groupsSlice'
 import {showCreateGroupForm, hideCreateGroupForm, reverseCreateGroupForm} from './createGroupSlice'
 import './GroupsList.css'
-import CustomersService from './RecommendationsService';
+import RecommendationsService from './RecommendationsService';
 import GroupItem from './GroupItem';
 import GroupCreate from './GroupCreate';
 import LoadingSpinner from './LoadingSpinner';
 
-const customersService = new CustomersService();
+const recommendationsService = new RecommendationsService();
 
 function GroupsList(props) {
     const [userGroupsPage, setUserGroupsPage] = useState(1);
@@ -32,7 +32,7 @@ function GroupsList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      customersService.getUserGroups(userGroupsPage+1)
+      recommendationsService.getUserGroups(userGroupsPage+1)
           .then((response) => onUpdateResult(response))
     }
 
@@ -51,7 +51,7 @@ function GroupsList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        customersService.getUserGroups(userGroupsPage)
+        recommendationsService.getUserGroups(userGroupsPage)
               .then((response) => onSetResult(response))
     }, []);
 
