@@ -1,11 +1,14 @@
 import './Header.css'
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 function Header() {
     return (
       <nav className="navbar navbar-expand-lg navbar-dark">
-        <a className="navbar-brand ms-2" href="#">GHREC</a>
+        <Link to="/home" className="navbar-brand-link">
+          <a className="navbar-brand ms-2">GHREC</a>
+        </Link>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>

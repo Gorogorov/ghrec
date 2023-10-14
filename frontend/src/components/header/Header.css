@@ -2,3 +2,7 @@
     height: 50px;
     background-color: #121212;
 }
+
+.navbar-brand-link {
+    text-decoration: none;
+}
