@@ -2,6 +2,7 @@ import './GroupItem.css'
 
 import React, { memo } from 'react';
 import { useDispatch } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom';
 
 import { removeGroup, updateGroup } from 'redux/groupsSlice'
 import {useNotification} from 'hooks/useNotification';
@@ -20,21 +21,15 @@ const GroupItem = memo(function GroupItem(props) {
     const dispatch = useDispatch();
 
     function handleRunRecommendations(event) {
-        // recommendationsService.compute(
-        //   {
-        //     "first_name": firstName,
-        //     "last_name": lastName,
-        //     "email": email,
-        //     "phone": phone,
-        //     "address": address,
-        //     "description": description,
-        // }          
-        // ).then((result)=>{
-        //   alert("Repository added!");
-        // }).catch(()=>{
-        //   alert('There was an error!');
-        // });
-        console.log("run recommendations");
+        recommendationsService.computeRecommendations(props.groupName      
+        ).then(()=>{
+            createNotification(`Group ${props.groupName} in processing`, "success");
+            dispatch(updateGroup({id: props.groupName,
+                changes: {recommendations_status: "P"}
+            }));
+        }).catch((error)=>{
+            createNotification(JSON.stringify(error), "error");
+        });
         event.preventDefault();
     }
 
@@ -101,8 +96,20 @@ const GroupItem = memo(function GroupItem(props) {
                 ))}
             </div>
             <div className="d-flex card-footer group-item-actions">
-                <input className="run-recs-btn btn btn-primary btn-sm btn-dark ml-2" type="submit" value="Get recommendations"/>
-                {/* <input className="show-recs-btn btn btn-primary btn-sm btn-dark ml-2" type="submit" value="Show recommendations"/> */}
+                {props.recStatus === "N" ?
+                    <input className="run-recs-btn btn btn-primary btn-sm btn-dark"
+                           type="submit" 
+                           value="Compute recommendations"/>
+                : null}
+                {props.recStatus === "P" ?
+                    <span className="proc-rec-container">Processing</span>
+                : null}
+                {props.recStatus === "C" ?
+                    <Link to={"/home/recommendations/"+props.groupName+"/"} 
+                          className="show-recs-link btn btn-primary btn-sm btn-dark">
+                        Show recommendations
+                    </Link>
+                : null}
             </div>
         </div>
         </form>

@@ -72,7 +72,8 @@ function GroupsList(props) {
             {userGroups.map(group => (
               <GroupItem key={group.name}
               groupName={group.name}
-              groupRepositories={group.repositories}/>
+              groupRepositories={group.repositories}
+              recStatus={group.recommendations_status}/>
             ))}
           </ul>
           <div className="groups-loading-spinner d-flex justify-content-center mb-1">

@@ -7,7 +7,7 @@ function Header() {
     return (
       <nav className="navbar navbar-expand-lg navbar-dark">
         <Link to="/home" className="navbar-brand-link">
-          <a className="navbar-brand ms-2">GHREC</a>
+          <span className="navbar-brand ms-2">GHREC</span>
         </Link>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
