@@ -7,7 +7,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AuthPage from 'components/auth-page/AuthPage';
 import SigninForm from 'components/auth-page/SigninForm';
 import SignupForm from 'components/auth-page/SignupForm';
-import Home from 'components/home/Home'
+import HomePage from 'components/home-page/HomePage'
 import RecommendationsPage from 'components/recommendations-page/RecommendationsPage'
 import Logout from 'components/logout/Logout'
 import RequireAuth from 'components/require-auth/RequireAuth'
@@ -19,7 +19,7 @@ const BaseLayout = () => (
     <Routes>
       <Route path="/home/" element={
               <RequireAuth>
-                <Home/>
+                <HomePage/>
               </RequireAuth>}
       />
       <Route path="/home/recommendations/:groupName/" 
