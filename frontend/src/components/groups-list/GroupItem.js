@@ -1,11 +1,12 @@
 import './GroupItem.css'
 
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 import { useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { removeGroup, updateGroup } from 'redux/groupsSlice'
-import {useNotification} from 'hooks/useNotification';
+import { useNotification } from 'hooks/useNotification';
+import RemoveGroupModal from './RemoveGroupModal';
 import RecommendationsService from 'axios-services/RecommendationsService';
 
 const recommendationsService = new RecommendationsService();
@@ -18,6 +19,7 @@ const groupRepColorPalette = ["rgba(22, 114, 136, 0.3)", "rgba(140, 218, 236, 0.
 
 const GroupItem = memo(function GroupItem(props) {
     const {createNotification} = useNotification();
+    const [modalRmGroupIsOpen, setModalRmGroupIsOpen] = useState(false);
     const dispatch = useDispatch();
 
     function handleRunRecommendations(event) {
@@ -64,6 +66,12 @@ const GroupItem = memo(function GroupItem(props) {
         });
     }
 
+    function closeModalRmGroup() {
+        setModalRmGroupIsOpen(false);
+    }
+
+    const modalRmGroupMsg = "Are you sure? All recommendations will be deleted.";
+
     return (
         <form onSubmit={handleRunRecommendations}>
         <div className="card group-item mb-1 border border-2 w-100">
@@ -75,7 +83,7 @@ const GroupItem = memo(function GroupItem(props) {
                     <button type="button"
                             className="group-remove-btn btn btn-close shadow-none"
                             aria-label="Close"
-                            onClick={handleRemoveGroup}>        
+                            onClick={(e) => setModalRmGroupIsOpen(true)}>        
                     </button>
                 </div>
             </div>
@@ -112,6 +120,12 @@ const GroupItem = memo(function GroupItem(props) {
                 : null}
             </div>
         </div>
+        {modalRmGroupIsOpen && <RemoveGroupModal title="Delete group"
+                                                 msg={modalRmGroupMsg}
+                                                 modalOnClose={closeModalRmGroup}
+                                                 modalIsOpen={modalRmGroupIsOpen}
+                                                 modalOnRemove={handleRemoveGroup}
+        />}
         </form>
     )
 })

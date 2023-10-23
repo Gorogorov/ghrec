@@ -13,7 +13,6 @@ import Logout from 'components/logout/Logout'
 import RequireAuth from 'components/require-auth/RequireAuth'
 import Notifications from 'components/notifications/Notifications';
 
-
 const BaseLayout = () => (
   <div className="ghrec-app">
     <Routes>

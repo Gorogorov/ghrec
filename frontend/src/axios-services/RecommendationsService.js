@@ -59,4 +59,8 @@ export default class RecommendationsService {
         const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/recommendations/compute/`);
         return AxiosApiInstance.get(url);
     }
+    reloadUserRepositories(){
+        const url = `${API_URL}/api/user/repositories/reload/`;
+        return AxiosApiInstance.get(url).then(response => response.data);
+    }
 }
