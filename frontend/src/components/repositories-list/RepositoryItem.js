@@ -22,7 +22,6 @@ function RepositoryItem(props) {
                                             else {
                                                 return null;
                                             }});
-    
 
     function handleAddRepToGroup(event) {
         if (selectedGroupOption !== "") {

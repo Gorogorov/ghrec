@@ -121,10 +121,13 @@ const GroupItem = memo(function GroupItem(props) {
                             <a href={rep.url} className="link-dark group-rep-link" target="_blank">
                                 {rep.name}
                             </a>
-                            <button type="button"
-                                    className="rep-remove-btn btn btn-close shadow-none ms-1"
-                                    aria-label="Close"
-                                    onClick={(event) => handleRemoveGroupRepository(event, rep)}></button>
+                            {props.recStatus === "N" ?
+                                <button type="button"
+                                        className="rep-remove-btn btn btn-close shadow-none ms-1"
+                                        aria-label="Close"
+                                        onClick={(event) => handleRemoveGroupRepository(event, rep)}
+                                />
+                            : null}
                         </div>
                     </div>
                 ))}
