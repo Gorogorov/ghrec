@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import { removeGroup, updateGroup } from 'redux/groupsSlice'
 import { useNotification } from 'hooks/useNotification';
-import RemoveGroupModal from './RemoveGroupModal';
+import GroupModal from './GroupModal';
 import RecommendationsService from 'axios-services/RecommendationsService';
 
 const recommendationsService = new RecommendationsService();
@@ -20,9 +20,15 @@ const groupRepColorPalette = ["rgba(22, 114, 136, 0.3)", "rgba(140, 218, 236, 0.
 const GroupItem = memo(function GroupItem(props) {
     const {createNotification} = useNotification();
     const [modalRmGroupIsOpen, setModalRmGroupIsOpen] = useState(false);
+    const [modalRunRecsIsOpen, setModalRunRecsIsOpen] = useState(false);
     const dispatch = useDispatch();
 
+    function starsToMins(starsNum) {
+        return Math.ceil(starsNum / 8);
+    }
+
     function handleRunRecommendations(event) {
+        setModalRunRecsIsOpen(false);
         recommendationsService.computeRecommendations(props.groupName      
         ).then(()=>{
             createNotification(`Group ${props.groupName} in processing`, "success");
@@ -70,10 +76,30 @@ const GroupItem = memo(function GroupItem(props) {
         setModalRmGroupIsOpen(false);
     }
 
-    const modalRmGroupMsg = "Are you sure? All recommendations will be deleted.";
+    function closeModalRunRecs() {
+        setModalRunRecsIsOpen(false);
+    }
+
+    const modalRmGroupMsg = <p className="modal-rmg-msg">
+            <span>Are you sure? All recommendations will be deleted.</span>
+    </p>;
+    
+    let starsNumTotal = 0;
+    for (const rep of props.groupRepositories) {
+        starsNumTotal += Number(rep.num_stars);
+    }
+
+    const modalRunRecsMsg = <p className="modal-runrecs-msg">
+            <span>GitHub's external API is used to build recommendations. </span>
+            <span>Due to this, the operation may take a <b>significant</b> </span> 
+            <span>amount of time to complete. You can track task progress </span>
+            <span>using the fair progress bar.</span>
+            <br/>
+            <br/>
+            <span><b>Time estimation: {starsToMins(starsNumTotal)} minutes</b></span>
+    </p>;
 
     return (
-        <form onSubmit={handleRunRecommendations}>
         <div className="card group-item mb-1 border border-2 w-100">
             <div className="card-header group-item-header d-flex justify-content-between">
                 <h5 className="group-item-title">
@@ -106,8 +132,9 @@ const GroupItem = memo(function GroupItem(props) {
             <div className="d-flex card-footer group-item-actions">
                 {props.recStatus === "N" ?
                     <input className="run-recs-btn btn btn-primary btn-sm btn-dark"
-                           type="submit" 
-                           value="Compute recommendations"/>
+                           type="button" 
+                           value="Compute recommendations"
+                           onClick={(e) => setModalRunRecsIsOpen(true)}/>
                 : null}
                 {props.recStatus === "P" ?
                     <span className="proc-rec-container">Processing</span>
@@ -119,15 +146,22 @@ const GroupItem = memo(function GroupItem(props) {
                     </Link>
                 : null}
             </div>
+            {modalRmGroupIsOpen && <GroupModal title="Delete group"
+                                        msg={modalRmGroupMsg}
+                                        modalOnClose={closeModalRmGroup}
+                                        modalIsOpen={modalRmGroupIsOpen}
+                                        modalOnSubmit={handleRemoveGroup}
+                                        modalBtnValue="Delete"
+            />}
+            {modalRunRecsIsOpen && <GroupModal title="Compute recommendations"
+                                        msg={modalRunRecsMsg}
+                                        modalOnClose={closeModalRunRecs}
+                                        modalIsOpen={modalRunRecsIsOpen}
+                                        modalOnSubmit={handleRunRecommendations}
+                                        modalBtnValue="Compute"
+            />}
         </div>
-        {modalRmGroupIsOpen && <RemoveGroupModal title="Delete group"
-                                                 msg={modalRmGroupMsg}
-                                                 modalOnClose={closeModalRmGroup}
-                                                 modalIsOpen={modalRmGroupIsOpen}
-                                                 modalOnRemove={handleRemoveGroup}
-        />}
-        </form>
-    )
+    );
 })
 
 export default GroupItem;

@@ -1,8 +1,10 @@
 import React from 'react';
 import Modal from 'react-modal';
 
-function RemoveGroupModal(props) {
-    const {title, msg, modalOnClose, modalIsOpen, modalOnRemove} = props;
+function GroupModal(props) {
+    const {title, msg, modalOnClose, modalIsOpen,
+        modalOnSubmit, modalBtnValue} = props;
+    Modal.setAppElement('#root');
 
     const modalStyles = {
         content: {
@@ -13,6 +15,7 @@ function RemoveGroupModal(props) {
           marginRight: "-50%",
           transform: "translate(-50%, -50%)",
           backgroundColor: "#f1f1f1",
+          width: "25rem",
         },
         overlay: {
             backgroundColor: "rgba(140, 140, 140, 0.3)",
@@ -21,38 +24,34 @@ function RemoveGroupModal(props) {
 
     return (
     <Modal  isOpen={modalIsOpen}
-            // onAfterOpen={afterOpenModal}
             onRequestClose={modalOnClose}
             style={modalStyles}
-            contentLabel="Modal remove group"
     >
-        <div className="modal-rmg-header d-flex justify-content-between">
-            <h5 className="modal-rmg-title m-0">
+        <div className="modal-header d-flex justify-content-between mb-3">
+            <h5 className="modal-title m-0">
                 {title}
             </h5>
-            <div className="modal-rmg-close">
+            <div className="modal-close-times">
                 <button type="button"
-                        className="modal-rmg-close-times btn btn-close shadow-none"
+                        className="modal-close-times-btn btn btn-close shadow-none"
                         aria-label="Close"
                         onClick={modalOnClose}>        
                 </button>
             </div>
         </div>
-        <p className="modal-rmg-close-msg">
-            {msg}
-        </p>
-        <div className="d-flex justify-content-between mx-2">
-            <input  className="modal-rmg-ok-btn btn btn-primary btn-dark"
+        {msg}
+        <div className="d-flex justify-content-between">
+            <input  className="modal-ok-btn btn btn-primary btn-dark col-4"
                     type="button"
-                    value="Delete"
-                    onClick={modalOnRemove}/>
-            <input  className="modal-rmg-close-btn btn btn-primary btn-dark"
+                    value={modalBtnValue}
+                    onClick={modalOnSubmit}/>
+            <input  className="modal-close-btn btn btn-primary btn-dark opacity-50 col-4"
                     type="button"
                     value="Close"
                     onClick={modalOnClose}/>
         </div>
     </Modal>
-    )
+    );
 }
 
-export default RemoveGroupModal;
+export default GroupModal;

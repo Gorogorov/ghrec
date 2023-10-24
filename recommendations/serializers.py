@@ -36,7 +36,7 @@ class RepositoryGroupSerializer(serializers.ModelSerializer):
         child=serializers.URLField(min_length=1, max_length=2100), write_only=True
     )
     repositories = DynamicRepositorySerializer(
-        many=True, fields=["name", "url"], read_only=True
+        many=True, fields=["name", "url", "num_stars"], read_only=True
     )
 
     def validate_name(self, name):

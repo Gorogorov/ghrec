@@ -26,7 +26,8 @@ function RepositoryItem(props) {
 
     function handleAddRepToGroup(event) {
         if (selectedGroupOption !== "") {
-            let newGroupRepository = {"name": props.title, "url": props.url};
+            let newGroupRepository = {"name": props.title, "url": props.url, 
+                                      "num_stars": props.stars};
             let updatedGroupRepositories = [...selectedGroupRepositories, newGroupRepository];
             let updatedGroupRepositoriesUrl = updatedGroupRepositories.map((rep) => rep["url"]);
             recommendationsService.updateUserGroup(
