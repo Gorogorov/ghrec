@@ -28,13 +28,12 @@ function SigninForm() {
                 signinFormRequest["email"] = usernameOrEmail;
             }
             recommendationsService.login(signinFormRequest
-                ).then((result)=>{
-                    localStorage.setItem("isAuthenticated", "true");
-                    navigate("/home");
-                }).catch((error)=>{
-                    createNotification(JSON.stringify(error), "error");
-                }
-            )
+            ).then(()=>{
+                localStorage.setItem("isAuthenticated", "true");
+                navigate("/home");
+            }).catch((error)=>{
+                createNotification(JSON.stringify(error), "error");
+            });
         }
     }
 

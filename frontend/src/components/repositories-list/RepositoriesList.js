@@ -33,8 +33,12 @@ function RepositoriesList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      recommendationsService.getUserRepositories(userRepositoriesPage+1)
-          .then((response) => onUpdateResult(response))
+      recommendationsService.getUserRepositories(userRepositoriesPage+1
+      ).then((response)=>{
+        onUpdateResult(response);
+      }).catch((error)=>{
+        createNotification(JSON.stringify(error), "error");
+      });
     }
 
     const handleScroll = (e) => {
@@ -49,9 +53,8 @@ function RepositoriesList(props) {
     const handleReloadReps = (e) => {
       setIsPageLoading(true);
       recommendationsService.reloadUserRepositories(
-      ).then((result)=>{
-          
-      }).catch((error)=>{
+      ).then(
+      ).catch((error)=>{
           setIsPageLoading(false);
           createNotification(JSON.stringify(error), "error");
       });
@@ -59,8 +62,12 @@ function RepositoriesList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        recommendationsService.getUserRepositories(userRepositoriesPage)
-              .then((response) => onSetResult(response))
+        recommendationsService.getUserRepositories(userRepositoriesPage
+        ).then((response)=>{
+          onSetResult(response);
+        }).catch((error)=>{
+          createNotification(JSON.stringify(error), "error");
+        });
     }, []);
 
     const groupOptions = useSelector(groupsSelectors.selectIds);

@@ -30,7 +30,7 @@ function SignupForm() {
                 "password": password,
                 "email": email
             }
-            ).then((result)=>{
+            ).then(()=>{
                 createNotification("You registered successfully!", "success");
             }).catch((error)=>{
                 if (error.status === 409) {

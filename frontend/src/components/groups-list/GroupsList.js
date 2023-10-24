@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { groupsSelectors, addGroups } from 'redux/groupsSlice'
 import { reverseCreateGroupForm} from 'redux/createGroupSlice'
+import { useNotification } from 'hooks/useNotification';
 import RecommendationsService from 'axios-services/RecommendationsService';
 import GroupItem from './GroupItem';
 import GroupCreate from './GroupCreate';
@@ -17,6 +18,7 @@ function GroupsList(props) {
     const [userGroupsNumPages, setUserGroupsNumPages] = useState(NaN);
     const [isPageLoading, setIsPageLoading] = useState(false);
     const showCreateGroupForm = useSelector((state) => state.createGroup.showCreateGroupForm);
+    const {createNotification} = useNotification();
     const dispatch = useDispatch();
 
     function onSetResult(result) {
@@ -33,8 +35,12 @@ function GroupsList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      recommendationsService.getUserGroups(userGroupsPage+1)
-          .then((response) => onUpdateResult(response))
+      recommendationsService.getUserGroups(userGroupsPage+1
+      ).then((response)=>{
+        onUpdateResult(response);
+      }).catch((error)=>{
+        createNotification(JSON.stringify(error), "error");
+      });
     }
 
     const handleScroll = (e) => {
@@ -52,8 +58,12 @@ function GroupsList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        recommendationsService.getUserGroups(userGroupsPage)
-              .then((response) => onSetResult(response))
+        recommendationsService.getUserGroups(userGroupsPage
+        ).then((response)=>{
+          onSetResult(response);
+        }).catch((error)=>{
+          createNotification(JSON.stringify(error), "error");
+        });
     }, []);
 
     const userGroups = useSelector(groupsSelectors.selectAll);

@@ -35,7 +35,7 @@ function RepositoryItem(props) {
                     "name": selectedGroupOption,
                     "repositories_url": updatedGroupRepositoriesUrl,
             }
-            ).then((result)=>{
+            ).then(()=>{
                 dispatch(updateGroup({id: selectedGroupOption,
                     changes: {repositories: updatedGroupRepositories}
                 }));

@@ -44,7 +44,7 @@ const GroupItem = memo(function GroupItem(props) {
     function handleRemoveGroup(event) {
         recommendationsService.deleteUserGroup(
             props.groupName
-        ).then((result)=>{
+        ).then(()=>{
             dispatch(removeGroup(props.groupName));
         }).catch((error)=>{
             createNotification(JSON.stringify(error), "error");
@@ -63,7 +63,7 @@ const GroupItem = memo(function GroupItem(props) {
                 "name": props.groupName,
                 "repositories_url": updatedGroupRepositoriesUrl,
         }
-        ).then((result)=>{
+        ).then(()=>{
             dispatch(updateGroup({id: props.groupName,
                                   changes: {repositories: updatedGroupRepositories}
             }));

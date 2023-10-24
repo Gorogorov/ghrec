@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import RecommendationsService from 'axios-services/RecommendationsService';
+import { useNotification } from 'hooks/useNotification';
 import RecommendationItem from './RecommendationItem';
 import LoadingSpinner from 'components/loading-spinner/LoadingSpinner';
 
@@ -43,7 +44,7 @@ function RecommendationsList(props) {
     const [groupRecsPage, setGroupRecsPage] = useState(1);
     const [groupRecsNumPages, setGroupRecsNumPages] = useState(NaN);
     const [isPageLoading, setIsPageLoading] = useState(false);
-
+    const {createNotification} = useNotification();
     const { groupName } = useParams();
 
     function onSetResult(result) {
@@ -60,8 +61,12 @@ function RecommendationsList(props) {
     
     function onPaginatedSearch(e) {
       setIsPageLoading(true);
-      recommendationsService.getGroupRecommendations(groupName, groupRecsPage+1)
-          .then((response) => onUpdateResult(response))
+      recommendationsService.getGroupRecommendations(groupName, groupRecsPage+1
+      ).then((response)=>{
+        onUpdateResult(response);
+      }).catch((error)=>{
+        createNotification(JSON.stringify(error), "error");
+      });
     }
 
     const handleScroll = (e) => {
@@ -76,8 +81,12 @@ function RecommendationsList(props) {
 
     useEffect(() => {
         setIsPageLoading(true);
-        recommendationsService.getGroupRecommendations(groupName, groupRecsPage)
-              .then((response) => onSetResult(response))
+        recommendationsService.getGroupRecommendations(groupName, groupRecsPage
+        ).then((response)=>{
+          onSetResult(response);
+        }).catch((error)=>{
+          createNotification(JSON.stringify(error), "error");
+        });
     }, []);
 
     // const groupOptions = useSelector(groupsSelectors.selectIds);
