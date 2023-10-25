@@ -61,6 +61,6 @@ export default class RecommendationsService {
     }
     reloadUserRepositories(){
         const url = `${API_URL}/api/user/repositories/reload/`;
-        return AxiosApiInstance.get(url).then(response => response.data);
+        return AxiosApiInstance.get(url);
     }
 }

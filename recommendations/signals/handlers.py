@@ -13,12 +13,11 @@ logger = logging.getLogger(__name__)
 @receiver(post_save, sender=GHUser)
 def get_starred_repositories_handler(sender, instance, **kwargs):
     if kwargs["created"]:
-        # cltask_user_starred_repositories.delay(instance.username, instance.github_username)
-        task_result = cltask_user_starred_repositories(
+        task_result = cltask_user_starred_repositories.delay(
             instance.username, instance.github_username
         )
         logger.info(
             "Celery task submitted, "
             "name: cltask_user_starred_repositories, "
-            f"task_id {task_result}"
+            f"task_id: {task_result.id}"
         )

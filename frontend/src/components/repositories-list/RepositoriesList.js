@@ -51,13 +51,21 @@ function RepositoriesList(props) {
     }
 
     const handleReloadReps = (e) => {
-      setIsPageLoading(true);
       recommendationsService.reloadUserRepositories(
-      ).then(
-      ).catch((error)=>{
-          setIsPageLoading(false);
+      ).then(()=>{
+        setUserRepositories([]);
+        setUserRepositoriesPage(1);
+        setIsPageLoading(true);
+        recommendationsService.getUserRepositories(userRepositoriesPage
+        ).then((response)=>{
+          onSetResult(response);
+        }).catch((error)=>{
           createNotification(JSON.stringify(error), "error");
+        });
+      }).catch((error)=>{
+        createNotification(JSON.stringify(error), "error");
       });
+
     }
 
     useEffect(() => {

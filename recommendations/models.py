@@ -17,6 +17,7 @@ class GHUser(models.Model):
     github_username = models.CharField(max_length=255)
     last_reps_update = models.DateTimeField(null=True)
     repositories = models.ManyToManyField(GHRepository, related_name="users")
+    retrieve_reps_task_id = models.UUIDField(null=True)
 
 
 class GHRepositoryGroup(models.Model):

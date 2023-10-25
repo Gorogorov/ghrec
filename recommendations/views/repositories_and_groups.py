@@ -1,3 +1,5 @@
+import logging
+
 from rest_framework.response import Response
 from rest_framework.decorators import (
     api_view,
@@ -7,13 +9,22 @@ from rest_framework.decorators import (
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.core.paginator import Paginator
+from celery.result import AsyncResult
 
-from recommendations.models import GHUser, GHRepositoryGroup
+from recommendations.models import (
+    GHUser,
+    GHRepositoryGroup,
+    GHRepository
+)
 from recommendations.serializers import (
     RepositoryGroupSerializer,
     DynamicRepositorySerializer,
 )
 from recommendations.views.authenticate import JWTAuthenticationWithCookie
+from recommendations.tasks import cltask_user_starred_repositories
+
+
+logger = logging.getLogger(__name__)
 
 
 @api_view(["GET"])
@@ -24,7 +35,7 @@ def user_repositories(request):
     List user repositories.
     """
     try:
-        GHUser.objects.get(pk=request.user.id)
+        ghuser = GHUser.objects.get(pk=request.user.id)
     except GHUser.DoesNotExist:
         return Response(
             {"detail": "User model does not exist."}, status=status.HTTP_404_NOT_FOUND
@@ -36,6 +47,10 @@ def user_repositories(request):
         )
 
     if request.method == "GET":
+        reps_task = AsyncResult(str(ghuser.retrieve_reps_task_id),
+                          app=cltask_user_starred_repositories)
+        reps_task.get()
+        
         reps_per_page = 30
         response_data = {}
 
@@ -60,6 +75,42 @@ def user_repositories(request):
 
         response_data["repositories"] = serializer.data
         return Response(response_data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthenticationWithCookie])
+def user_repositories_reload(request):
+    """
+    Reload user repositories.
+    """
+    try:
+        ghuser = GHUser.objects.get(pk=request.user.id)
+    except GHUser.DoesNotExist:
+        return Response(
+            {"detail": "User model does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"detail": f"Some problems with the user account."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    if request.method == "GET":
+        GHRepository.users.through.objects.filter(
+            ghuser_id=ghuser
+        ).delete()
+        task_result = cltask_user_starred_repositories.delay(
+            ghuser.username, ghuser.github_username
+        )
+        ghuser.retrieve_reps_task_id = task_result.id
+        ghuser.save()
+        logger.info(
+            "Celery task submitted, "
+            "name: cltask_user_starred_repositories, "
+            f"task_id: {task_result.id}"
+        )
+        return Response(status=status.HTTP_205_RESET_CONTENT)
 
 
 @api_view(["GET", "POST"])

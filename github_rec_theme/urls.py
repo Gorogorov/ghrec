@@ -18,6 +18,7 @@ urlpatterns = [
     path("api/auth/register/", authenticate.register, name="register"),
     path("api/auth/logout/", authenticate.logout),
     path("api/user/repositories/", repositories_and_groups.user_repositories),
+    path("api/user/repositories/reload/", repositories_and_groups.user_repositories_reload),
     path("api/user/groups/", repositories_and_groups.user_groups_list),
     path("api/user/groups/<str:group_name>/", repositories_and_groups.user_group),
     path(

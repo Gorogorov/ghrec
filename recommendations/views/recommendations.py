@@ -98,7 +98,7 @@ def recommendations_compute(request, group_name):
         )
 
     try:
-        ghgroup = GHRepositoryGroup.objects.get(user=request.user.id, name=group_name)
+        GHRepositoryGroup.objects.get(user=request.user.id, name=group_name)
     except GHRepositoryGroup.DoesNotExist:
         return Response(
             {"detail": "Requested group does not exist."},
@@ -111,14 +111,10 @@ def recommendations_compute(request, group_name):
         )
 
     if request.method == "GET":
-        task_result = cltask_starred_repositories_of_stargazers(ghgroup)
+        task_result = cltask_starred_repositories_of_stargazers.delay(request.user.id, group_name)
         logger.info(
             "Celery task submitted, "
             "name: cltask_starred_repositories_of_stargazers, "
-            f"task_id: {task_result}"
+            f"task_id: {task_result.id}"
         )
-        return Response(
-            # {"celery_task_id": task_result.task_id}, status=status.HTTP_202_ACCEPTED
-            {"celery_task_id": 0},
-            status=status.HTTP_202_ACCEPTED,
-        )
+        return Response(status=status.HTTP_202_ACCEPTED)

@@ -7,7 +7,12 @@ from recommendations.github_gql_queries import (
     gh_get_user_starred_repositories,
     gh_get_starred_repositories_of_stargazers,
 )
-from recommendations.models import GHUser, GHRepository, GHRecommendedRepository
+from recommendations.models import (
+    GHUser,
+    GHRepository,
+    GHRecommendedRepository,
+    GHRepositoryGroup,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -60,7 +65,8 @@ def cltask_user_starred_repositories(username, github_username):
 
 
 @clapp.task
-def cltask_starred_repositories_of_stargazers(ghgroup):
+def cltask_starred_repositories_of_stargazers(user_id, group_name):
+    ghgroup = GHRepositoryGroup.objects.get(user=user_id, name=group_name)
     batch_size = 6
     ghgroup.recommendations_status = "P"
     ghgroup.save()
