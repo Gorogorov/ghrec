@@ -35,6 +35,7 @@ class GHRepositoryGroup(models.Model):
         choices=RecommendationsStatus.choices,
         default=RecommendationsStatus.NOT_STARTED,
     )
+    get_recs_task_id = models.UUIDField(null=True)
     recommended_repositories = models.ManyToManyField(
         GHRepository, through="GHRecommendedRepository"
     )

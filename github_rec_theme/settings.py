@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "recommendations",
     "rest_framework_simplejwt.token_blacklist",
+    "rest_framework.authtoken",
 ]
 
 MIDDLEWARE = [
@@ -104,6 +105,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "github_rec_theme.wsgi.application"
+# ASGI_APPLICATION = 'github_rec_theme.asgi.application'
 
 
 # Database
@@ -197,9 +199,23 @@ SIMPLE_JWT = {
     # This can be 'Lax', 'Strict', or None to disable the flag.
 }
 
+WS_AUTH = {
+    "TOKEN_LIFETIME": timedelta(minutes=10),
+}
+
 # Redis settings
 REDIS_HOST = "localhost"
 REDIS_PORT = "6379"
 BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
 BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}
 CELERY_RESULT_BACKEND = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(REDIS_HOST, REDIS_PORT)],
+        },
+    },
+}

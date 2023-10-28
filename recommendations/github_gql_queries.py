@@ -121,7 +121,8 @@ def gh_get_stargazers(repository, github_query_template, head):
 
 
 def gh_get_starred_reps_list(
-    users_login, users_batch_size, github_query_template, head
+    users_login, users_batch_size, github_query_template,
+    head, progress_recorder
 ):
     logger.debug(
         "Retrieving repositories for stagazers, "
@@ -193,6 +194,7 @@ def gh_get_starred_reps_list(
                 del processing_users[alias]
                 del users_starred_reps[login]
                 processed_users_num += 1
+                progress_recorder.set_progress(processed_users_num, total_users_num)
                 logger.debug(
                     "Number of processed users: "
                     f"{processed_users_num}/{total_users_num}"
@@ -208,6 +210,7 @@ def gh_get_starred_reps_list(
             if not has_next_page:
                 del processing_users[alias]
                 processed_users_num += 1
+                progress_recorder.set_progress(processed_users_num, total_users_num)
                 logger.debug(
                     "Number of processed users: "
                     f"{processed_users_num}/{total_users_num}"
@@ -233,7 +236,8 @@ def gh_get_starred_reps_list(
     return users_starred_reps
 
 
-def gh_get_starred_repositories_of_stargazers(repositories, users_batch_size):
+def gh_get_starred_repositories_of_stargazers(repositories, users_batch_size,
+                                              progress_recorder):
     # TODO: add simple recomendation system
     templateLoader = jinja2.FileSystemLoader(searchpath="recommendations/templates")
     templateEnv = jinja2.Environment(loader=templateLoader)
@@ -257,7 +261,8 @@ def gh_get_starred_repositories_of_stargazers(repositories, users_batch_size):
         github_starred_reps_batch_template_f
     )
     starred_reps_by_user = gh_get_starred_reps_list(
-        stargazers_login, users_batch_size, github_starred_reps_batch_template, head
+        stargazers_login, users_batch_size, github_starred_reps_batch_template,
+        head, progress_recorder
     )
 
     # return repositories in format {url: extra_info}

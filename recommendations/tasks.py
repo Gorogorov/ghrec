@@ -1,7 +1,9 @@
 import logging
 
 from django.utils import timezone
+from celery import shared_task
 
+from recommendations.progress_recorder import WebSocketProgressRecorder
 from github_rec_theme.celery import clapp
 from recommendations.github_gql_queries import (
     gh_get_user_starred_repositories,
@@ -64,8 +66,10 @@ def cltask_user_starred_repositories(username, github_username):
         logger.exception(e)
 
 
-@clapp.task
-def cltask_starred_repositories_of_stargazers(user_id, group_name):
+@shared_task(bind=True)
+def cltask_starred_repositories_of_stargazers(self, user_id, group_name):
+    progress_recorder = WebSocketProgressRecorder(self)
+    progress_recorder.set_progress(0, 1)
     ghgroup = GHRepositoryGroup.objects.get(user=user_id, name=group_name)
     batch_size = 6
     ghgroup.recommendations_status = "P"
@@ -73,7 +77,7 @@ def cltask_starred_repositories_of_stargazers(user_id, group_name):
     try:
         group_repositories = ghgroup.repositories
         stargazers_starred_reps = gh_get_starred_repositories_of_stargazers(
-            group_repositories, batch_size
+            group_repositories, batch_size, progress_recorder
         )
 
         starred_reps = []

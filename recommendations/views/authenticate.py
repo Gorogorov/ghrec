@@ -8,13 +8,12 @@ from rest_framework.decorators import (
     authentication_classes,
 )
 from rest_framework.permissions import IsAuthenticated
-
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
-
+from rest_framework.authtoken.models import Token
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -114,6 +113,31 @@ class JWTAuthenticationWithCookie(JWTAuthentication):
         validated_token = self.get_validated_token(raw_token)
 
         return self.get_user(validated_token), validated_token
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthenticationWithCookie])
+def create_ws_token(request):
+    """
+    Create and obtain websocket token for access to websocket endpoints.
+    """
+    try:
+        GHUser.objects.get(pk=request.user.id)
+    except GHUser.DoesNotExist:
+        return Response(
+            {"detail": "User model does not exist."}, status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {"detail": f"Some problems with the user account."},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    if request.method == "GET":
+        Token.objects.filter(user=request.user).delete()
+        token = Token.objects.create(user=request.user)
+        return Response({"token": token.key})
 
 
 # def get_tokens_for_user(user):
