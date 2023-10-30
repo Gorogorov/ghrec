@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { removeGroup, updateGroup } from 'redux/groupsSlice'
 import { useNotification } from 'hooks/useNotification';
 import GroupModal from './GroupModal';
+import ProgressBar from 'components/progress-bar/ProgressBar';
 import RecommendationsService from 'axios-services/RecommendationsService';
 
 const recommendationsService = new RecommendationsService();
@@ -148,6 +149,9 @@ const GroupItem = memo(function GroupItem(props) {
                         Show recommendations
                     </Link>
                 : null}
+                {/* <ProgressBar completed="54"
+                             bgcolor="#121212"
+                             text="54 percent"/> */}
             </div>
             {modalRmGroupIsOpen && <GroupModal title="Delete group"
                                         msg={modalRmGroupMsg}

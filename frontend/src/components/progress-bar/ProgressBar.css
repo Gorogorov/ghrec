@@ -1,0 +1,29 @@
+.progress-bar-container-wrapper {
+    position: relative;
+    height: 20px;
+}
+
+.progress-bar-container {
+    height: inherit;
+    width: 400px;
+    background-color: #e0e0de;
+    border-radius: 7px;
+    position: absolute;
+}
+
+.progress-bar-filter {
+    position: absolute;
+    height: inherit;
+    border-radius: inherit;
+    transition: width 1s ease-in-out;
+}
+
+.progress-bar-label {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-weight: bold;
+    mix-blend-mode: difference;
+    font-size: small;
+}
