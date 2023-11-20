@@ -12,13 +12,17 @@ import RecommendationsPage from 'components/recommendations-page/Recommendations
 import Logout from 'components/logout/Logout'
 import RequireAuth from 'components/require-auth/RequireAuth'
 import Notifications from 'components/notifications/Notifications';
+import WebSocketProvider from 'components/web-socket-provider/WebSocketProvider';
+
 
 const BaseLayout = () => (
   <div className="ghrec-app">
     <Routes>
       <Route path="/home/" element={
               <RequireAuth>
-                <HomePage/>
+                <WebSocketProvider>
+                  <HomePage/>
+                </WebSocketProvider>
               </RequireAuth>}
       />
       <Route path="/home/recommendations/:groupName/" 

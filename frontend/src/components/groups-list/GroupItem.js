@@ -149,9 +149,10 @@ const GroupItem = memo(function GroupItem(props) {
                         Show recommendations
                     </Link>
                 : null}
-                {/* <ProgressBar completed="54"
+                <ProgressBar completed="54"
                              bgcolor="#121212"
-                             text="54 percent"/> */}
+                             text="54 percent"
+                             groupName={props.groupName}/>
             </div>
             {modalRmGroupIsOpen && <GroupModal title="Delete group"
                                         msg={modalRmGroupMsg}

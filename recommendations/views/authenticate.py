@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+import pytz
 
 from rest_framework import status, exceptions
 from rest_framework.response import Response
@@ -18,6 +20,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.middleware import csrf
+from django.db import transaction, IntegrityError
 
 # from recommendations.tasks import cltask_user_starred_repositories
 from recommendations.models import GHUser
@@ -115,9 +118,16 @@ class JWTAuthenticationWithCookie(JWTAuthentication):
         return self.get_user(validated_token), validated_token
 
 
+class MultipleWSTokens(Exception):
+    """More than 1 WebSocket token for single user."""
+
+    pass
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthenticationWithCookie])
+# @transaction.atomic
 def create_ws_token(request):
     """
     Create and obtain websocket token for access to websocket endpoints.
@@ -135,9 +145,45 @@ def create_ws_token(request):
         )
 
     if request.method == "GET":
-        Token.objects.filter(user=request.user).delete()
-        token = Token.objects.create(user=request.user)
-        return Response({"token": token.key})
+        try:
+            with transaction.atomic():
+                token = Token.objects.filter(user=request.user)
+                if token.count() > 1:
+                    raise MultipleWSTokens
+                elif token.count() == 0:
+                    token = Token.objects.create(user=request.user)
+                elif token.count() == 1:
+                    utc_now = datetime.utcnow()
+                    utc_now = utc_now.replace(tzinfo=pytz.utc)
+
+                    if token[0].created < utc_now - settings.WS_AUTH["TOKEN_LIFETIME"]:
+                        new_key = token[0].generate_key()
+                        token.update(key=new_key, created=utc_now)
+                    token = token[0]
+            return Response({"token": token.key})
+                
+        except IntegrityError:
+            return Response({"error": "Token creating/updating failed."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except MultipleWSTokens:
+            return Response({"error": "Multiple WS tokens in db."},
+                status=status.HTTP_400_BAD_REQUEST)
+
+        # token, created = Token.objects.get_or_create(user=request.user)
+        # if not created:
+        #     utc_now = datetime.utcnow()
+        #     utc_now = utc_now.replace(tzinfo=pytz.utc)
+        #     Token.objects.filter(user=request.user).update(
+        #         value = When(created__gt=utc_now - settings.WS_AUTH["TOKEN_LIFETIME"], 
+        #                      then=utc_now),
+        #         created = When(created__gt=utc_now - settings.WS_AUTH["TOKEN_LIFETIME"], 
+        #                        then=utc_now),
+        #     )
+
+        #     if token.created < utc_now - settings.WS_AUTH["TOKEN_LIFETIME"]:
+        #         Token.objects.filter(user=request.user).delete()
+        #         token = Token.objects.create(user=request.user)
+        # return Response({"token": token.key})
 
 
 # def get_tokens_for_user(user):
