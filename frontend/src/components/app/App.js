@@ -12,7 +12,7 @@ import RecommendationsPage from 'components/recommendations-page/Recommendations
 import Logout from 'components/logout/Logout'
 import RequireAuth from 'components/require-auth/RequireAuth'
 import Notifications from 'components/notifications/Notifications';
-import WebSocketProvider from 'components/web-socket-provider/WebSocketProvider';
+import WebSocketClient from 'components/web-socket/WebSocketClient';
 
 
 const BaseLayout = () => (
@@ -20,9 +20,8 @@ const BaseLayout = () => (
     <Routes>
       <Route path="/home/" element={
               <RequireAuth>
-                <WebSocketProvider>
-                  <HomePage/>
-                </WebSocketProvider>
+                <HomePage/>
+                <WebSocketClient/>
               </RequireAuth>}
       />
       <Route path="/home/recommendations/:groupName/" 

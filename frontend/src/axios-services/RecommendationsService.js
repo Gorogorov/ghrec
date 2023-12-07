@@ -28,6 +28,10 @@ export default class RecommendationsService {
         const url = `${API_URL}/api/user/repositories/?page=${page}`;
         return AxiosApiInstance.get(url).then(response => response.data);
     }
+    reloadUserRepositories(){
+        const url = `${API_URL}/api/user/repositories/reload/`;
+        return AxiosApiInstance.get(url);
+    }
     searchUserRepositories(queue){
         const url = `${API_URL}/api/user/repositories/search/`;
         return AxiosApiInstance.post(url, queue).then(response => response.data);
@@ -61,10 +65,6 @@ export default class RecommendationsService {
 	}
     computeRecommendations(groupName){
         const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/recommendations/compute/`);
-        return AxiosApiInstance.get(url);
-    }
-    reloadUserRepositories(){
-        const url = `${API_URL}/api/user/repositories/reload/`;
         return AxiosApiInstance.get(url);
     }
 }

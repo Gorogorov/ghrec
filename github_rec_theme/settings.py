@@ -83,6 +83,12 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": True,
         },
+        "daphne": {
+            "handlers": [
+                "rotfile_debug",
+            ],
+            "level": "DEBUG"
+        },
     },
 }
 

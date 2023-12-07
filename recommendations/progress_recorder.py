@@ -38,8 +38,9 @@ class ConsoleProgressRecorder(AbstractProgressRecorder):
 
 class ProgressRecorder(AbstractProgressRecorder):
 
-    def __init__(self, task):
+    def __init__(self, task, group_name):
         self.task = task
+        self.group_name = group_name
 
     def set_progress(self, current, total, description=""):
         percent = 0
@@ -155,7 +156,7 @@ class KnownResult(EagerResult):
 
 def _get_completed_progress():
     return {
-        'pending': False,
+        'state': 'completed',
         'current': 100,
         'total': 100,
         'percent': 100,
@@ -189,6 +190,7 @@ class WebSocketProgressRecorder(ProgressRecorder):
 
     @staticmethod
     def push_update(task_id, data, final=False):
+        # print("push update")
         try:
             async_to_sync(closing_group_send)(
                 channel_layer, 
@@ -205,4 +207,5 @@ class WebSocketProgressRecorder(ProgressRecorder):
         state, meta = super().set_progress(current, total, description)
         result = KnownResult(self.task.request.id, meta, state)
         data = Progress(result).get_info()
+        data["group_name"] = self.group_name
         self.push_update(self.task.request.id, data)

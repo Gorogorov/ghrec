@@ -47,9 +47,10 @@ def user_repositories(request):
         )
 
     if request.method == "GET":
-        reps_task = AsyncResult(str(ghuser.retrieve_reps_task_id),
-                          app=cltask_user_starred_repositories)
-        reps_task.get()
+        # WTF IS IT?????????
+        # reps_task = AsyncResult(str(ghuser.retrieve_reps_task_id),
+        #                   app=cltask_user_starred_repositories)
+        # reps_task.get()
         
         reps_per_page = 30
         response_data = {}

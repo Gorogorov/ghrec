@@ -10,8 +10,18 @@ import RecommendationsService from 'axios-services/RecommendationsService';
 import GroupItem from './GroupItem';
 import GroupCreate from './GroupCreate';
 import LoadingSpinner from 'components/loading-spinner/LoadingSpinner';
+// import { wsGroupsSelectors } from 'redux/webSocketInfoSlice'
 
 const recommendationsService = new RecommendationsService();
+
+function add_default_progress_state(groups) {
+  for (var i = 0; i < groups.length; i++) {
+    groups[i].recs_total = 100;
+    groups[i].recs_current = 0;
+    groups[i].recs_perc = 0;
+  }
+  return groups;
+}
 
 function GroupsList(props) {
   const [userGroupsPage, setUserGroupsPage] = useState(1);
@@ -21,15 +31,25 @@ function GroupsList(props) {
   const {createNotification} = useNotification();
   const dispatch = useDispatch();
 
+  const userGroups = useSelector(groupsSelectors.selectAll);
+  // const wsInfo = useSelector(wsGroupsSelectors.selectAll);
+  // console.log(wsInfo);
+  // console.log("test0" in wsInfo);
+
   function onSetResult(result) {
     setIsPageLoading(false);
     setUserGroupsNumPages(result["num_pages"]);
-    dispatch(addGroups(result["groups"]));
+
+    const newGroups = add_default_progress_state(result["groups"]);
+    dispatch(addGroups(newGroups));
   }
   
   function onUpdateResult(result) {
     setIsPageLoading(false);
-    dispatch(addGroups(result["groups"]));
+
+    const newGroups = add_default_progress_state(result["groups"]);
+    dispatch(addGroups(newGroups));
+
     setUserGroupsPage(userGroupsPage+1);
   }
   
@@ -66,8 +86,6 @@ function GroupsList(props) {
       });
   }, []);
 
-  const userGroups = useSelector(groupsSelectors.selectAll);
-
   return (
       <div className="groups-list-scrollable px-2 pt-1 pb-3" onScroll={handleScroll}>
         <div className="groups-list-header pb-2 d-flex justify-content-between align-items-center">
@@ -83,7 +101,8 @@ function GroupsList(props) {
             <GroupItem key={group.name}
             groupName={group.name}
             groupRepositories={group.repositories}
-            recStatus={group.recommendations_status}/>
+            recStatus={group.recommendations_status}
+            />
           ))}
         </ul>
         <div className="groups-loading-spinner d-flex justify-content-center mb-1">

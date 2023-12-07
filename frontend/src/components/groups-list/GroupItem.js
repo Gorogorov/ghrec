@@ -1,13 +1,15 @@
 import './GroupItem.css'
 
-import React, { memo, useState } from 'react';
-import { useDispatch } from 'react-redux'
+import React, { memo, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom';
 
+import store from 'redux/store'
 import { removeGroup, updateGroup } from 'redux/groupsSlice'
 import { useNotification } from 'hooks/useNotification';
 import GroupModal from './GroupModal';
 import ProgressBar from 'components/progress-bar/ProgressBar';
+import { wsGroupsSelectors } from 'redux/webSocketInfoSlice'
 import RecommendationsService from 'axios-services/RecommendationsService';
 
 const recommendationsService = new RecommendationsService();
@@ -18,11 +20,38 @@ const groupRepColorPalette = ["rgba(22, 114, 136, 0.3)", "rgba(140, 218, 236, 0.
                               "rgba(60, 180, 100, 0.3)", "rgba(155, 221, 177, 0.3)",
                               "rgba(88, 12, 31, 0.3)", "rgba(131, 99, 148, 0.3)"];
 
-const GroupItem = memo(function GroupItem(props) {
+function GroupItem(props) {
     const {createNotification} = useNotification();
     const [modalRmGroupIsOpen, setModalRmGroupIsOpen] = useState(false);
     const [modalRunRecsIsOpen, setModalRunRecsIsOpen] = useState(false);
     const dispatch = useDispatch();
+
+    // console.log(wsGroupsSelectors.selectById, props.groupName);
+    // console.log(store.getState());
+
+    const wsGroupInfo = useSelector(state => wsGroupsSelectors.selectById(state, props.groupName));
+    // const wsGroupInfo = useSelector(wsGroupsSelectors.selectAll);
+    const taskComplete = wsGroupInfo !== undefined ? wsGroupInfo.taskComplete : undefined;
+    const taskSuccess = wsGroupInfo !== undefined ? wsGroupInfo.taskSuccess : undefined;
+    const taskTotal = wsGroupInfo !== undefined ? wsGroupInfo.taskTotal : undefined;
+    const taskCurrent = wsGroupInfo !== undefined ? wsGroupInfo.taskCurrent : undefined;
+    const taskPercent = wsGroupInfo !== undefined ? wsGroupInfo.taskPercent : undefined;
+    // console.log(props.groupName, taskComplete, taskSuccess, taskTotal, taskCurrent, taskPercent);
+
+    // const init = new Date()
+    // const [date, setDate] = useState(init)
+  
+    // const tick = () => {
+    //   setDate(new Date())
+    // }
+  
+    // useEffect(() => {
+    //   const timerID = setInterval(() => tick(), 1000)
+    //   return () => {
+    //     clearInterval(timerID)
+    //   }
+    // }, [])
+    
 
     function starsToMins(starsNum) {
         return Math.ceil(starsNum / 8);
@@ -141,7 +170,13 @@ const GroupItem = memo(function GroupItem(props) {
                            onClick={(e) => setModalRunRecsIsOpen(true)}/>
                 : null}
                 {props.recStatus === "P" ?
-                    <span className="proc-rec-container">Processing</span>
+                    <div className="proc-rec-container">
+                        {wsGroupInfo !== undefined && !taskComplete &&
+                        <ProgressBar completed={taskPercent}
+                                bgcolor="#121212"
+                                text={`${taskPercent}% (${taskCurrent}/${taskTotal})`}
+                        />}
+                    </div>
                 : null}
                 {props.recStatus === "C" ?
                     <Link to={"/home/recommendations/"+props.groupName+"/"} 
@@ -149,10 +184,12 @@ const GroupItem = memo(function GroupItem(props) {
                         Show recommendations
                     </Link>
                 : null}
-                <ProgressBar completed="54"
-                             bgcolor="#121212"
-                             text="54 percent"
-                             groupName={props.groupName}/>
+                {/* {props.taskCounterPercent === -1 &&
+                    <ProgressBar completed="0"
+                                bgcolor="#121212"
+                                text="0% (0/0)"
+                    />
+                } */}
             </div>
             {modalRmGroupIsOpen && <GroupModal title="Delete group"
                                         msg={modalRmGroupMsg}
@@ -170,6 +207,6 @@ const GroupItem = memo(function GroupItem(props) {
             />}
         </div>
     );
-})
+};
 
 export default GroupItem;

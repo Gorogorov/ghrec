@@ -194,6 +194,7 @@ def gh_get_starred_reps_list(
                 del processing_users[alias]
                 del users_starred_reps[login]
                 processed_users_num += 1
+                logger.debug("\n\n\nSET PROGRESS\n\n\n")
                 progress_recorder.set_progress(processed_users_num, total_users_num)
                 logger.debug(
                     "Number of processed users: "

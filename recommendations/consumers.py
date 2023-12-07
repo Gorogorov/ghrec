@@ -1,4 +1,5 @@
 import json
+import logging
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from celery.result import AsyncResult
@@ -6,6 +7,9 @@ from celery_progress.backend import Progress
 from channels.db import database_sync_to_async
 
 from recommendations.models import GHRepositoryGroup, GHUser
+
+
+logger = logging.getLogger(__name__)
 
 
 @database_sync_to_async
@@ -91,12 +95,15 @@ class ProgressConsumer(AsyncWebsocketConsumer):
             if task_type == "check_task_completion":
                 task_id = await get_task_id(self.scope["user"].id, msg_json["group_name"])
                 task_id = str(task_id)
+                group_task_data = Progress(AsyncResult(task_id)).get_info()
+                group_task_data["group_name"] = msg_json["group_name"]
+                group_task_data["type"] = "update_task_progress"
 
                 await self.channel_layer.group_send(
                     task_id,
                     {
                         "type": "update_task_progress",
-                        "data": Progress(AsyncResult(task_id)).get_info()
+                        "data": group_task_data
                     }
                 )
 
@@ -105,5 +112,6 @@ class ProgressConsumer(AsyncWebsocketConsumer):
 
     async def update_task_progress(self, event):
         data = event['data']
+        data["type"] = "update_task_progress"
 
         await self.send(text_data=json.dumps(data))
