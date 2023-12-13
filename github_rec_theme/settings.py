@@ -87,7 +87,7 @@ LOGGING = {
             "handlers": [
                 "rotfile_debug",
             ],
-            "level": "INFO"
+            "level": "WARNING"
         },
     },
 }
@@ -185,15 +185,15 @@ CORS_ALLOWED_ORIGINS = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "recommendations.authentication_class.CustomAuthentication",
+        "recommendations.jwt_cookie_authentication.JWTCookieAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 30,
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
     "ROTATE_REFRESH_TOKENS": True,
     "BLACKLIST_AFTER_ROTATION": True,
     "AUTH_COOKIE": "access_token",  # Cookie name. Enables cookies if value is set.
@@ -206,7 +206,7 @@ SIMPLE_JWT = {
 }
 
 WS_AUTH = {
-    "TOKEN_LIFETIME": timedelta(minutes=10),
+    "TOKEN_LIFETIME": timedelta(minutes=15),
 }
 
 # Redis settings

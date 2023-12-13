@@ -9,7 +9,7 @@ export default class RecommendationsService {
 	}
 	refreshToken() {
 		const url = `${API_URL}/api/auth/token/refresh/`;
-		return AxiosApiInstance.get(url).then(response => response.data);
+		return AxiosApiInstance.post(url).then(response => response.data);
 	}
 	register(user_data) {
 		const url = `${API_URL}/api/auth/register/`;
