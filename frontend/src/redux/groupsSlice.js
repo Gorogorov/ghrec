@@ -29,10 +29,15 @@ const selectorNotStartedIds = createSelector(
   state => state.groups,
   (groups) => Object.keys(objectFilter(groups.entities, group => group.recommendations_status === "N"))
 );
+const selectorProcessingIds = createSelector(
+  state => state.groups,
+  (groups) => Object.keys(objectFilter(groups.entities, group => group.recommendations_status === "P"))
+);
 
 
 export const { addGroup, addGroups, removeGroup, updateGroup } = groupsSlice.actions;
 export const groupsSelectors = groupsAdapter.getSelectors(state => state.groups);
 export const selectNotStarted = selectorNotStarted,
-             selectNotStartedIds = selectorNotStartedIds;
+             selectNotStartedIds = selectorNotStartedIds,
+             selectProcessingIds = selectorProcessingIds;
 export default groupsSlice.reducer;

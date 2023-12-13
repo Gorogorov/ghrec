@@ -134,6 +134,8 @@ def gh_get_starred_reps_list(
     users_starred_reps = {login: [] for login in users_login}
 
     login_to_alias = {users_login[i]: f"user{str(i)}" for i in range(len(users_login))}
+
+    # initial slice of users in batch
     processing_users = {
         login_to_alias[login]: {"reps_cursor": "", "login": login}
         for login in users_login[:users_batch_size]
@@ -186,28 +188,22 @@ def gh_get_starred_reps_list(
 
         for alias, user_data in starred_reps_batch_response.json()["data"].items():
             login = processing_users[alias]["login"]
+            num_of_reps = user_data["starredRepositories"]["totalCount"]
+            has_next_page = user_data["starredRepositories"]["pageInfo"]["hasNextPage"]
 
             # Don't add repositories of the user if
             # his number of repositories > max_reps_th
-            num_of_reps = user_data["starredRepositories"]["totalCount"]
-            if num_of_reps > max_reps_th:
-                del processing_users[alias]
+            too_many_reps = num_of_reps > max_reps_th
+            
+            if too_many_reps:
                 del users_starred_reps[login]
-                processed_users_num += 1
-                progress_recorder.set_progress(processed_users_num, total_users_num)
-                logger.debug(
-                    "Number of processed users: "
-                    f"{processed_users_num}/{total_users_num}"
-                )
-                continue
-
-            user_starred_reps_part = [
-                rep["node"] for rep in user_data["starredRepositories"]["edges"]
-            ]
-            users_starred_reps[login].extend(user_starred_reps_part)
-
-            has_next_page = user_data["starredRepositories"]["pageInfo"]["hasNextPage"]
-            if not has_next_page:
+            else:
+                user_starred_reps_part = [
+                    rep["node"] for rep in user_data["starredRepositories"]["edges"]
+                ]
+                users_starred_reps[login].extend(user_starred_reps_part)
+            
+            if not has_next_page or too_many_reps:
                 del processing_users[alias]
                 processed_users_num += 1
                 progress_recorder.set_progress(processed_users_num, total_users_num)
@@ -223,7 +219,7 @@ def gh_get_starred_reps_list(
                         "reps_cursor": "",
                     }
                     next_user_ind += 1
-            else:
+            elif not too_many_reps and has_next_page:
                 reps_cursor = (
                     'after: "'
                     + user_data["starredRepositories"]["pageInfo"]["endCursor"]

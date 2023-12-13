@@ -23,7 +23,10 @@ function GroupCreate(props) {
             dispatch(addGroup({name: groupName,
                                repositories: [],
                                created_at: result.data.created_at,
-                               recommendations_status: "N"
+                               recommendations_status: "N",
+                               recs_total: 100,
+                               recs_current: 0,
+                               recs_perc: 0,
             }));
             dispatch(hideCreateGroupForm());
 

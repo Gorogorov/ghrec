@@ -68,7 +68,7 @@ def cltask_user_starred_repositories(username, github_username):
 
 @shared_task(bind=True)
 def cltask_starred_repositories_of_stargazers(self, user_id, group_name):
-    progress_recorder = WebSocketProgressRecorder(self)
+    progress_recorder = WebSocketProgressRecorder(self, group_name)
     progress_recorder.set_progress(0, 1)
     ghgroup = GHRepositoryGroup.objects.get(user=user_id, name=group_name)
     batch_size = 6

@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+import pytz
 
 from rest_framework import status, exceptions
 from rest_framework.response import Response
@@ -18,8 +20,8 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.middleware import csrf
+from django.db import transaction, IntegrityError
 
-# from recommendations.tasks import cltask_user_starred_repositories
 from recommendations.models import GHUser
 
 
@@ -115,9 +117,16 @@ class JWTAuthenticationWithCookie(JWTAuthentication):
         return self.get_user(validated_token), validated_token
 
 
+class MultipleWSTokens(Exception):
+    """More than 1 WebSocket token for single user."""
+
+    pass
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthenticationWithCookie])
+# @transaction.atomic
 def create_ws_token(request):
     """
     Create and obtain websocket token for access to websocket endpoints.
@@ -135,48 +144,29 @@ def create_ws_token(request):
         )
 
     if request.method == "GET":
-        Token.objects.filter(user=request.user).delete()
-        token = Token.objects.create(user=request.user)
-        return Response({"token": token.key})
+        try:
+            with transaction.atomic():
+                token = Token.objects.filter(user=request.user)
+                if token.count() > 1:
+                    raise MultipleWSTokens
+                elif token.count() == 0:
+                    token = Token.objects.create(user=request.user)
+                elif token.count() == 1:
+                    utc_now = datetime.utcnow()
+                    utc_now = utc_now.replace(tzinfo=pytz.utc)
 
-
-# def get_tokens_for_user(user):
-#     refresh = RefreshToken.for_user(user)
-
-#     return {
-#         'refresh': str(refresh),
-#         'access': str(refresh.access_token),
-#     }
-
-
-# @api_view(['POST'])
-# def login(request):
-#     data = request.data
-#     response = Response()
-#     username = data.get('username', None)
-#     if username is None:
-#         email = data.get('email', None)
-#         user = User.objects.get(email=email)
-#         username = user.username
-#     password = data.get('password', None)
-#     user = authenticate(username=username, password=password)
-#     if user is not None and user.is_active:
-#         data = get_tokens_for_user(user)
-#         response.set_cookie(
-#                             key = settings.SIMPLE_JWT['AUTH_COOKIE'],
-#                             value = data["access"],
-#                             expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-#                             secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-#                             httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-#                             samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'])
-#         csrf.get_token(request)
-#         response.data = {"message" : "Login successfully"}
-
-#         return response
-#     else:
-#         return Response({"message" : {"non_field_errors": "Unable to log in with provided credentials"}},
-#                          status=status.HTTP_409_CONFLICT)
-
+                    if token[0].created < utc_now - settings.WS_AUTH["TOKEN_LIFETIME"]:
+                        new_key = token[0].generate_key()
+                        token.update(key=new_key, created=utc_now)
+                    token = token[0]
+            return Response({"token": token.key})
+                
+        except IntegrityError:
+            return Response({"error": "Token creating/updating failed."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        except MultipleWSTokens:
+            return Response({"error": "Multiple WS tokens in db."},
+                status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["POST"])
 def register(request):

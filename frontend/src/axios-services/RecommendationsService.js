@@ -19,10 +19,18 @@ export default class RecommendationsService {
 		const url = `${API_URL}/api/auth/logout/`;
 		return AxiosApiInstance.get(url).then(response => response.data);
 	}
+    getWsToken(){
+        const url = `${API_URL}/api/auth/ws_token/`;
+        return AxiosApiInstance.get(url).then(response => response.data);
+    }
 
     getUserRepositories(page){
         const url = `${API_URL}/api/user/repositories/?page=${page}`;
         return AxiosApiInstance.get(url).then(response => response.data);
+    }
+    reloadUserRepositories(){
+        const url = `${API_URL}/api/user/repositories/reload/`;
+        return AxiosApiInstance.get(url);
     }
     searchUserRepositories(queue){
         const url = `${API_URL}/api/user/repositories/search/`;
@@ -57,10 +65,6 @@ export default class RecommendationsService {
 	}
     computeRecommendations(groupName){
         const url = encodeURI(`${API_URL}/api/user/groups/${groupName}/recommendations/compute/`);
-        return AxiosApiInstance.get(url);
-    }
-    reloadUserRepositories(){
-        const url = `${API_URL}/api/user/repositories/reload/`;
         return AxiosApiInstance.get(url);
     }
 }
