@@ -22,7 +22,6 @@ from django.contrib.auth.models import User
 from django.middleware import csrf
 from django.db import transaction, IntegrityError
 
-# from recommendations.tasks import cltask_user_starred_repositories
 from recommendations.models import GHUser
 
 
@@ -168,61 +167,6 @@ def create_ws_token(request):
         except MultipleWSTokens:
             return Response({"error": "Multiple WS tokens in db."},
                 status=status.HTTP_400_BAD_REQUEST)
-
-        # token, created = Token.objects.get_or_create(user=request.user)
-        # if not created:
-        #     utc_now = datetime.utcnow()
-        #     utc_now = utc_now.replace(tzinfo=pytz.utc)
-        #     Token.objects.filter(user=request.user).update(
-        #         value = When(created__gt=utc_now - settings.WS_AUTH["TOKEN_LIFETIME"], 
-        #                      then=utc_now),
-        #         created = When(created__gt=utc_now - settings.WS_AUTH["TOKEN_LIFETIME"], 
-        #                        then=utc_now),
-        #     )
-
-        #     if token.created < utc_now - settings.WS_AUTH["TOKEN_LIFETIME"]:
-        #         Token.objects.filter(user=request.user).delete()
-        #         token = Token.objects.create(user=request.user)
-        # return Response({"token": token.key})
-
-
-# def get_tokens_for_user(user):
-#     refresh = RefreshToken.for_user(user)
-
-#     return {
-#         'refresh': str(refresh),
-#         'access': str(refresh.access_token),
-#     }
-
-
-# @api_view(['POST'])
-# def login(request):
-#     data = request.data
-#     response = Response()
-#     username = data.get('username', None)
-#     if username is None:
-#         email = data.get('email', None)
-#         user = User.objects.get(email=email)
-#         username = user.username
-#     password = data.get('password', None)
-#     user = authenticate(username=username, password=password)
-#     if user is not None and user.is_active:
-#         data = get_tokens_for_user(user)
-#         response.set_cookie(
-#                             key = settings.SIMPLE_JWT['AUTH_COOKIE'],
-#                             value = data["access"],
-#                             expires = settings.SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-#                             secure = settings.SIMPLE_JWT['AUTH_COOKIE_SECURE'],
-#                             httponly = settings.SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
-#                             samesite = settings.SIMPLE_JWT['AUTH_COOKIE_SAMESITE'])
-#         csrf.get_token(request)
-#         response.data = {"message" : "Login successfully"}
-
-#         return response
-#     else:
-#         return Response({"message" : {"non_field_errors": "Unable to log in with provided credentials"}},
-#                          status=status.HTTP_409_CONFLICT)
-
 
 @api_view(["POST"])
 def register(request):

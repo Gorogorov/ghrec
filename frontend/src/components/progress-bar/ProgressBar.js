@@ -3,7 +3,7 @@ import './ProgressBar.css';
 import React, { memo } from 'react';
 
 
-function ProgressBar(props) {
+const ProgressBar = memo(function ProgressBar(props) {
     const { completed, text, bgcolor } = props;
 
     return (
@@ -18,7 +18,7 @@ function ProgressBar(props) {
             </div>
         </div>
     );
-};
+});
   
 export default ProgressBar;
   

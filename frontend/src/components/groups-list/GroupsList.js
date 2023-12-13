@@ -35,17 +35,12 @@ function GroupsList(props) {
   function onSetResult(result) {
     setIsPageLoading(false);
     setUserGroupsNumPages(result["num_pages"]);
-
-    const newGroups = add_default_progress_state(result["groups"]);
-    dispatch(addGroups(newGroups));
+    dispatch(addGroups(result["groups"]));
   }
   
   function onUpdateResult(result) {
     setIsPageLoading(false);
-
-    const newGroups = add_default_progress_state(result["groups"]);
-    dispatch(addGroups(newGroups));
-
+    dispatch(addGroups(result["groups"]));
     setUserGroupsPage(userGroupsPage+1);
   }
   

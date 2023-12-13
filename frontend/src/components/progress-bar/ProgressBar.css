@@ -15,7 +15,6 @@
     position: absolute;
     height: inherit;
     border-radius: inherit;
-    /* background-color: #121212; */
     transition: width 1s ease-in-out;
 }
 

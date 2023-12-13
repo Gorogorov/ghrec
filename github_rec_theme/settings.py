@@ -87,7 +87,7 @@ LOGGING = {
             "handlers": [
                 "rotfile_debug",
             ],
-            "level": "DEBUG"
+            "level": "INFO"
         },
     },
 }
