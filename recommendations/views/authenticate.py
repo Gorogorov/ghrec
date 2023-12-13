@@ -1,6 +1,6 @@
-import json
 from datetime import datetime
 import pytz
+import logging
 
 from rest_framework import status, exceptions
 from rest_framework.response import Response
@@ -13,27 +13,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
-from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework.authtoken.models import Token
 from django.conf import settings
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.middleware import csrf
 from django.db import transaction, IntegrityError
 
 from recommendations.models import GHUser
 
 
-class CookieTokenRefreshSerializer(TokenRefreshSerializer):
-    refresh = None
-
-    def validate(self, attrs):
-        attrs["refresh"] = self.context["request"].COOKIES.get("refresh_token")
-        if attrs["refresh"]:
-            return super().validate(attrs)
-        else:
-            raise InvalidToken("No valid token found in cookie 'refresh_token'")
+logger = logging.getLogger(__name__)
 
 
 class CookieTokenObtainPairView(TokenObtainPairView):
@@ -48,7 +37,7 @@ class CookieTokenObtainPairView(TokenObtainPairView):
                 request.data.update({"username": username})
                 request._mutable = False
         except:
-            raise exceptions.AuthenticationFailed("Bad credentials")
+            raise InvalidToken("Bad credentials")
 
         return super().initial(request, *args, **kwargs)
 
@@ -76,18 +65,41 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 
 class CookieTokenRefreshView(TokenRefreshView):
-    serializer_class = CookieTokenRefreshSerializer
+    def initial(self, request, *args, **kwargs):
+        if (not hasattr(request, "COOKIES") or 
+                "refresh_token" not in request.COOKIES):
+            raise InvalidToken("Bad credentials: request "
+                                                  "should have "
+                                                  "'resfresh_token' "
+                                                  "cookie")
+        refresh_token = request.COOKIES["refresh_token"]
+        request._mutable = True
+        request.data.update({"refresh": refresh_token})
+        request._mutable = False
+        return super().initial(request, *args, **kwargs)
 
     def finalize_response(self, request, response, *args, **kwargs):
-        if response.data.get("access"):
-            response.set_cookie(
-                "access_token",
-                response.data["access"],
-                max_age=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
-                httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
-                samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
-            )
-            del response.data["access"]
+        if not response.data.get("access"):
+            error_detail = None
+            if isinstance(response.data, dict) and "detail" in response.data:
+                error_detail = response.data["detail"]
+            if error_detail is None:
+                raise exceptions.AuthenticationFailed("Failed generation "
+                                                "of JWT access token")
+            else:
+                logger.warning("JWT access token generation failed with detail: "
+                               f"{str(error_detail)}")
+            return super().finalize_response(request, response, *args, **kwargs)
+
+        response.set_cookie(
+            "access_token",
+            response.data["access"],
+            max_age=settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"],
+            httponly=settings.SIMPLE_JWT["AUTH_COOKIE_HTTP_ONLY"],
+            samesite=settings.SIMPLE_JWT["AUTH_COOKIE_SAMESITE"],
+        )
+        del response.data["access"]
+
         if response.data.get("refresh"):
             response.set_cookie(
                 "refresh_token",
