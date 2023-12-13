@@ -10,7 +10,6 @@ import RecommendationsService from 'axios-services/RecommendationsService';
 import GroupItem from './GroupItem';
 import GroupCreate from './GroupCreate';
 import LoadingSpinner from 'components/loading-spinner/LoadingSpinner';
-// import { wsGroupsSelectors } from 'redux/webSocketInfoSlice'
 
 const recommendationsService = new RecommendationsService();
 
@@ -27,14 +26,11 @@ function GroupsList(props) {
   const [userGroupsPage, setUserGroupsPage] = useState(1);
   const [userGroupsNumPages, setUserGroupsNumPages] = useState(NaN);
   const [isPageLoading, setIsPageLoading] = useState(false);
-  const showCreateGroupForm = useSelector((state) => state.createGroup.showCreateGroupForm);
   const {createNotification} = useNotification();
   const dispatch = useDispatch();
 
+  const showCreateGroupForm = useSelector((state) => state.createGroup.showCreateGroupForm);
   const userGroups = useSelector(groupsSelectors.selectAll);
-  // const wsInfo = useSelector(wsGroupsSelectors.selectAll);
-  // console.log(wsInfo);
-  // console.log("test0" in wsInfo);
 
   function onSetResult(result) {
     setIsPageLoading(false);

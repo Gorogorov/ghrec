@@ -26,32 +26,12 @@ function GroupItem(props) {
     const [modalRunRecsIsOpen, setModalRunRecsIsOpen] = useState(false);
     const dispatch = useDispatch();
 
-    // console.log(wsGroupsSelectors.selectById, props.groupName);
-    // console.log(store.getState());
-
     const wsGroupInfo = useSelector(state => wsGroupsSelectors.selectById(state, props.groupName));
-    // const wsGroupInfo = useSelector(wsGroupsSelectors.selectAll);
     const taskComplete = wsGroupInfo !== undefined ? wsGroupInfo.taskComplete : undefined;
     const taskSuccess = wsGroupInfo !== undefined ? wsGroupInfo.taskSuccess : undefined;
     const taskTotal = wsGroupInfo !== undefined ? wsGroupInfo.taskTotal : undefined;
     const taskCurrent = wsGroupInfo !== undefined ? wsGroupInfo.taskCurrent : undefined;
     const taskPercent = wsGroupInfo !== undefined ? wsGroupInfo.taskPercent : undefined;
-    // console.log(props.groupName, taskComplete, taskSuccess, taskTotal, taskCurrent, taskPercent);
-
-    // const init = new Date()
-    // const [date, setDate] = useState(init)
-  
-    // const tick = () => {
-    //   setDate(new Date())
-    // }
-  
-    // useEffect(() => {
-    //   const timerID = setInterval(() => tick(), 1000)
-    //   return () => {
-    //     clearInterval(timerID)
-    //   }
-    // }, [])
-    
 
     function starsToMins(starsNum) {
         return Math.ceil(starsNum / 8);
@@ -184,12 +164,6 @@ function GroupItem(props) {
                         Show recommendations
                     </Link>
                 : null}
-                {/* {props.taskCounterPercent === -1 &&
-                    <ProgressBar completed="0"
-                                bgcolor="#121212"
-                                text="0% (0/0)"
-                    />
-                } */}
             </div>
             {modalRmGroupIsOpen && <GroupModal title="Delete group"
                                         msg={modalRmGroupMsg}

@@ -5,7 +5,7 @@ import RecommendationsService from 'axios-services/RecommendationsService';
 import { useNotification } from 'hooks/useNotification';
 import { wsGroupsSelectors,
          addOrUpdateGroupProgress } from 'redux/webSocketInfoSlice'
-import { groupsSelectors } from 'redux/groupsSlice'
+import { updateGroup, selectProcessingIds } from 'redux/groupsSlice'
 
 const recommendationsService = new RecommendationsService();
 
@@ -17,11 +17,8 @@ function WebSocketClient(props){
     const {createNotification} = useNotification();
     const dispatch = useDispatch();
 
-    const userGroups = useSelector(groupsSelectors.selectAll);
-    const wsInfo = useSelector(wsGroupsSelectors.selectAll);
-    console.log("INFO");
-    console.log(wsInfo);
-
+    const wsInfoIds = useSelector(wsGroupsSelectors.selectIds);
+    const processingIds = useSelector(selectProcessingIds);
 
     useEffect(()=>{
         recommendationsService.getWsToken(
@@ -39,14 +36,10 @@ function WebSocketClient(props){
                 // add group progress to web socket info
                 socketIsOpen.current = true;
                 setSocketRerender(1);
-                console.log("WebSocket is open");
             };
 
             socket.current.onmessage = function(event) {
-                console.log(wsInfo);
                 const eventData = JSON.parse(event.data);
-                console.log(event);
-                console.log(eventData.type);
                 if (eventData === null) {
                     createNotification(JSON.stringify({"error": 
                                                     "WebSocket message is none"}), 
@@ -60,12 +53,9 @@ function WebSocketClient(props){
                     );
                 }
                 else if (eventData.type === "update_task_progress") {
-                    console.log("dispatch update");
                     const groupName = eventData.group_name;
                     const { complete, success } = eventData;
                     const { total, current, percent } = eventData.progress;
-                    console.log(eventData);
-                    console.log(groupName, total, current, percent);
                     const taskState = { name: groupName,
                                     taskComplete: complete,
                                     taskSuccess: success,
@@ -74,12 +64,12 @@ function WebSocketClient(props){
                                     taskPercent: percent,
                     };
                     dispatch(addOrUpdateGroupProgress(taskState));
-                    // if (percent === 100) dispatch rec_status
-                    console.log("updddd");
-                    console.log(wsInfo);
+                    if (percent === 100) {
+                        dispatch(updateGroup({id: groupName,
+                            changes: {recommendations_status: "C"}
+                        }));
+                    }
                 }
-                // add group progress to web socket info
-                console.log(`[message] Данные получены с сервера: ${event.data}`);
             };
 
         }).catch((error)=>{
@@ -88,19 +78,22 @@ function WebSocketClient(props){
     }, [])
 
     useEffect(()=> {
-        if (socketIsOpen.current == true) {
-            for (var i = 0; i < userGroups.length; i++) {
-                const group = userGroups[i];
-                console.log("subscribe ", group.name)
+        if (socketIsOpen.current === true) {
+            for (var i = 0; i < processingIds.length; i++) {
+                const groupName = processingIds[i];
+                if (wsInfoIds.includes(groupName)) {
+                    continue;
+                }
+
                 socket.current.send(JSON.stringify({'type': 'group_task_subscribe',
-                                            'group_name': group.name,
+                                            'group_name': groupName,
                 }));
                 socket.current.send(JSON.stringify({'type': 'check_task_completion',
-                                            'group_name': group.name,
+                                            'group_name': groupName,
                 }));
             }
         }
-    }, [socketIsOpen, socketRerender, userGroups])
+    }, [socketIsOpen, socketRerender, processingIds])
 
     return(
         <>

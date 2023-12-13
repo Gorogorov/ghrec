@@ -190,7 +190,6 @@ class WebSocketProgressRecorder(ProgressRecorder):
 
     @staticmethod
     def push_update(task_id, data, final=False):
-        # print("push update")
         try:
             async_to_sync(closing_group_send)(
                 channel_layer, 

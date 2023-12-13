@@ -30,44 +30,11 @@ def get_task_id(user_id, group_name):
 
 
 class ProgressConsumer(AsyncWebsocketConsumer):
-    # async def connect(self):
-    #     await self.accept()
-    #     if not self.scope["user"].is_authenticated:
-    #         await self.send(json.dumps({"error": "Authentication is required."}))
-    #         await self.close(code=4000)
-    #     else:
-    #         self.group_name = self.scope["url_route"]["kwargs"]["group_name"]
-    #         self.user_id = self.scope["user"].id
-    #         self.task_id = await get_task_id(self.user_id, self.group_name)
-    #         if self.task_id is None:
-    #             await self.send(json.dumps({"error": "Requested group does not exist."}))
-    #             await self.close(code=4001)
-    #         else:
-    #             self.task_id = str(self.task_id)
-    #             await self.channel_layer.group_add(
-    #                 self.task_id,
-    #                 self.channel_name
-    #             )
-
     async def connect(self):
         await self.accept()
         if not self.scope["user"].is_authenticated:
-            print("alllo blyat")
             await self.send(json.dumps({"error": "Authentication is required."}))
             await self.close(code=4000)
-        # else:
-            # self.group_name = self.scope["url_route"]["kwargs"]["group_name"]
-            # self.user_id = self.scope["user"].id
-            # self.task_id = await get_task_id(self.user_id, self.group_name)
-            # if self.task_id is None:
-            #     await self.send(json.dumps({"error": "Requested group does not exist."}))
-            #     await self.close(code=4001)
-            # else:
-            #     self.task_id = str(self.task_id)
-            #     await self.channel_layer.group_add(
-            #         self.task_id,
-            #         self.channel_name
-            #     )
 
     # async def disconnect(self, close_code):
     #     await self.channel_layer.group_discard(
