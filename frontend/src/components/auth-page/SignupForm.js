@@ -34,14 +34,14 @@ function SignupForm() {
                 createNotification("You registered successfully!", "success");
             }).catch((error)=>{
                 if (error.status === 409) {
-                    if (error.message.username) {
+                    if (error.message.detail.username) {
                         let usernameElem = document.getElementById('inputUsername');
-                        setUsernameErr(error.message.username);
+                        setUsernameErr(error.message.detail.username);
                         usernameElem.classList.add('is-invalid');
                     }
-                    if (error.message.email) {
+                    if (error.message.detail.email) {
                         let emailElem = document.getElementById('inputEmail');
-                        setEmailErr(error.message.email);
+                        setEmailErr(error.message.detail.email);
                         emailElem.classList.add('is-invalid');
                     }
                 }

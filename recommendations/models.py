@@ -60,4 +60,4 @@ class GHRecommendedRepository(models.Model):
                 fields=["repository", "group"], name="unique_rep_group_combination"
             )
         ]
-        ordering = ["-num_of_hits"]
+        ordering = ["-num_of_hits", "repository__num_stars", "pk"]

@@ -174,10 +174,10 @@ def create_ws_token(request):
             return Response({"token": token.key})
                 
         except IntegrityError:
-            return Response({"error": "Token creating/updating failed."},
+            return Response({"detail": "Token creating/updating failed."},
                             status=status.HTTP_400_BAD_REQUEST)
         except MultipleWSTokens:
-            return Response({"error": "Multiple WS tokens in db."},
+            return Response({"detail": "Multiple WS tokens in db."},
                 status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["POST"])
@@ -194,7 +194,7 @@ def register(request):
         ghuser = GHUser(username=username, github_username=github_username)
         ghuser.save()
         return Response(
-            {"message": "User created successfully"}, status=status.HTTP_200_OK
+            {"detail": "User created successfully"}, status=status.HTTP_200_OK
         )
     else:
         error_data = {}
@@ -204,7 +204,7 @@ def register(request):
             error_data[
                 "email"
             ] = "A user is already registered with this e-mail address"
-        return Response({"message": error_data}, status=status.HTTP_409_CONFLICT)
+        return Response({"detail": error_data}, status=status.HTTP_409_CONFLICT)
 
 
 @api_view(["GET"])
