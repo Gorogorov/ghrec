@@ -19,7 +19,7 @@ application = ProtocolTypeRouter({
         TokenAuthMiddleware(
             URLRouter([
                 path(
-                    "api/ws/",
+                    "ws/",
                     ProgressConsumer.as_asgi(),
                 ),
             ])

@@ -1,21 +1,27 @@
 from pathlib import Path
 from datetime import timedelta
 import sys
+from os import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-q@mmfax73x=xww2t1v2+1lu(0ins(@71wznu-9_*98!)jb=lr4"
+SECRET_KEY = environ.get('DJANGO_SECRET_KEY',
+        default = "django-insecure-q@mmfax73x=xww2t1v2+1lu(0ins(@71wznu-9_*98!)jb=lr4")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = int(environ.get('DEBUG', default = 1))
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '*').split(' ')
+
+if "CSRF_TRUSTED_ORIGINS" in environ:
+    CSRF_TRUSTED_ORIGINS = environ.get('CSRF_TRUSTED_ORIGINS').split(' ')
 
 
 # Application definition
@@ -84,10 +90,8 @@ LOGGING = {
             "propagate": True,
         },
         "daphne": {
-            "handlers": [
-                "rotfile_debug",
-            ],
-            "level": "WARNING"
+            "handlers": ["rotfile_debug"],
+            "level": "INFO"
         },
     },
 }
@@ -130,8 +134,8 @@ DATABASES = {
         "NAME": "ghrec",
         "USER": "ghrec_admin",
         "PASSWORD": "ghrec_admin",
-        "HOST": "localhost",
-        "PORT": "",
+        "HOST": "postgres",
+        "PORT": "5432",
     }
 }
 
@@ -177,11 +181,10 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-
+# CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+# ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -210,7 +213,7 @@ WS_AUTH = {
 }
 
 # Redis settings
-REDIS_HOST = "localhost"
+REDIS_HOST = "redis"
 REDIS_PORT = "6379"
 BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
 BROKER_TRANSPORT_OPTIONS = {"visibility_timeout": 3600}

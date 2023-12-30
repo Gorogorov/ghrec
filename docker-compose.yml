@@ -1,0 +1,88 @@
+version: '2'
+
+services:
+    django:
+        image: ghrec_image
+        restart: unless-stopped
+        container_name: ghrec_django
+        build:
+            context: .
+            dockerfile: Dockerfile
+        entrypoint: /usr/src/app/entrypoint_django.sh
+        # volumes:
+        #     - static_volume:/usr/src/app/django_static
+        #     - media_volume:/usr/src/app/media
+        expose:
+            - 8000        
+        depends_on:
+            - postgres
+            - redis
+        env_file:
+            - ./.env
+
+    nginx:
+        restart: always
+        container_name: ghrec_nginx
+        build:
+            context: .
+            dockerfile: Dockerfile.nginx
+        ports:
+            - 80:80
+        volumes:
+            # - static_volume:/app/backend/server/django_static
+            # - media_volume:/app/backend/server/media
+            - ./nginx:/etc/nginx/conf.d
+        depends_on: 
+            - django
+            - daphne
+
+    daphne:
+        image: ghrec_image
+        restart: always
+        container_name: ghrec_daphne
+        entrypoint: /usr/src/app/entrypoint_daphne.sh
+        depends_on:
+            - redis
+            - postgres
+        ports:
+          - "8001:8001"
+        env_file:
+            - ./.env
+
+    worker:
+        image: ghrec_image
+        entrypoint: /usr/src/app/entrypoint_worker.sh
+        restart: always
+        container_name: ghrec_worker
+        # environment:
+        #   - BROKER_URL=amqp://${CELERY_USER}:${CELERY_PASS}@rabbitmq:5672//
+        #   - RESULT_BACKEND=redis://redis:6379/0
+        volumes:
+          - celery_data_volume:/var/lib/celery/
+        depends_on:
+          - redis
+          - postgres
+
+    redis:
+        image: redis
+        container_name: ghrec_redis
+        ports:
+          - "6379:6379"
+
+    postgres:
+        image: postgres:15-alpine
+        container_name: ghrec_postgres
+        volumes:
+          - postgres_volume:/var/lib/postgresql/data/
+        environment:
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          - POSTGRES_DB=${POSTGRES_DB}
+        env_file:
+            - ./.env
+
+volumes:
+    # static_volume: {}
+    # media_volume: {}
+    postgres_volume: {}
+    celery_data_volume: {}

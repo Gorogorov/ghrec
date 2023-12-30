@@ -1,7 +1,10 @@
 import axios from "axios";
 
+export const API_URL = (process.env.REACT_APP_API_URL) ? process.env.REACT_APP_API_URL : "/api";
+
 const AxiosApiInstance = axios.create({
-    baseURL: "http://localhost:8000/api",
+    // baseURL: "http://django:8000/api",
+    baseURL: API_URL,
     headers: {
         "Content-Type": "application/json",
     },
@@ -62,7 +65,6 @@ AxiosApiInstance.interceptors.response.use(
         }
 
         else {
-
             let errorMessage = {};
             const { request, response } = error;
             if (response) {

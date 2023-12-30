@@ -4,7 +4,6 @@ import re
 from abc import ABCMeta, abstractmethod
 from decimal import Decimal
 
-from celery_progress.backend import ProgressRecorder, Progress, KnownResult
 from celery.result import EagerResult, allow_join_result
 from celery.backends.base import DisabledBackend
 
