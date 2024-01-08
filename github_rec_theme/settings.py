@@ -130,12 +130,18 @@ WSGI_APPLICATION = "github_rec_theme.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "ghrec",
-        "USER": "ghrec_admin",
-        "PASSWORD": "ghrec_admin",
-        "HOST": "postgres",
-        "PORT": "5432",
+        "ENGINE": environ.get("POSTGRES_ENGINE",
+                              default="django.db.backends.postgresql"),
+        "NAME": environ.get("POSTGRES_DB",
+                            default="ghrec"),
+        "USER": environ.get("POSTGRES_USER",
+                            default="ghrec_admin"),
+        "PASSWORD": environ.get("POSTGRES_PASSWORD",
+                            default="ghrec_admin"),
+        "HOST": environ.get("POSTGRES_HOST",
+                            default="postgres"),
+        "PORT": environ.get("POSTGRES_PORT",
+                            default="5432"),
     }
 }
 

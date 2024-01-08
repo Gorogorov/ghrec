@@ -12,13 +12,13 @@ services:
         # volumes:
         #     - static_volume:/usr/src/app/django_static
         #     - media_volume:/usr/src/app/media
-        expose:
-            - 8000        
+        ports:
+            - 8000:8000
         depends_on:
             - postgres
             - redis
         env_file:
-            - ./.env
+            - ./.env.public
 
     nginx:
         restart: always
@@ -27,7 +27,7 @@ services:
             context: .
             dockerfile: Dockerfile.nginx
         ports:
-            - 80:80
+            - ${GHREC_PORT}:80
         volumes:
             # - static_volume:/app/backend/server/django_static
             # - media_volume:/app/backend/server/media
@@ -47,18 +47,15 @@ services:
         ports:
           - "8001:8001"
         env_file:
-            - ./.env
+            - ./.env.public
 
     worker:
         image: ghrec_image
         entrypoint: /usr/src/app/entrypoint_worker.sh
         restart: always
         container_name: ghrec_worker
-        # environment:
-        #   - BROKER_URL=amqp://${CELERY_USER}:${CELERY_PASS}@rabbitmq:5672//
-        #   - RESULT_BACKEND=redis://redis:6379/0
         volumes:
-          - celery_data_volume:/var/lib/celery/
+          - worker_volume:/var/lib/celery/
         depends_on:
           - redis
           - postgres
@@ -66,8 +63,8 @@ services:
     redis:
         image: redis
         container_name: ghrec_redis
-        ports:
-          - "6379:6379"
+        volumes:
+          - redis_volume:/var/lib/redis/data
 
     postgres:
         image: postgres:15-alpine
@@ -79,10 +76,11 @@ services:
           - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
           - POSTGRES_DB=${POSTGRES_DB}
         env_file:
-            - ./.env
+            - ./.env.public
 
 volumes:
     # static_volume: {}
     # media_volume: {}
+    redis_volume: {}
     postgres_volume: {}
-    celery_data_volume: {}
+    worker_volume: {}
