@@ -66,12 +66,10 @@ class CookieTokenObtainPairView(TokenObtainPairView):
 
 class CookieTokenRefreshView(TokenRefreshView):
     def initial(self, request, *args, **kwargs):
-        if (not hasattr(request, "COOKIES") or 
-                "refresh_token" not in request.COOKIES):
-            raise InvalidToken("Bad credentials: request "
-                                                  "should have "
-                                                  "'resfresh_token' "
-                                                  "cookie")
+        if not hasattr(request, "COOKIES") or "refresh_token" not in request.COOKIES:
+            raise InvalidToken(
+                "Bad credentials: request " "should have " "'resfresh_token' " "cookie"
+            )
         refresh_token = request.COOKIES["refresh_token"]
         request._mutable = True
         request.data.update({"refresh": refresh_token})
@@ -84,11 +82,14 @@ class CookieTokenRefreshView(TokenRefreshView):
             if isinstance(response.data, dict) and "detail" in response.data:
                 error_detail = response.data["detail"]
             if error_detail is None:
-                raise exceptions.AuthenticationFailed("Failed generation "
-                                                "of JWT access token")
+                raise exceptions.AuthenticationFailed(
+                    "Failed generation " "of JWT access token"
+                )
             else:
-                logger.warning("JWT access token generation failed with detail: "
-                               f"{str(error_detail)}")
+                logger.warning(
+                    "JWT access token generation failed with detail: "
+                    f"{str(error_detail)}"
+                )
             return super().finalize_response(request, response, *args, **kwargs)
 
         response.set_cookie(
@@ -172,13 +173,18 @@ def create_ws_token(request):
                         token.update(key=new_key, created=utc_now)
                     token = token[0]
             return Response({"token": token.key})
-                
+
         except IntegrityError:
-            return Response({"detail": "Token creating/updating failed."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Token creating/updating failed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         except MultipleWSTokens:
-            return Response({"detail": "Multiple WS tokens in db."},
-                status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"detail": "Multiple WS tokens in db."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
 
 @api_view(["POST"])
 def register(request):

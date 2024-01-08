@@ -24,7 +24,10 @@ urlpatterns = [
     path("api/auth/logout/", authenticate.logout),
     path("api/auth/ws_token/", authenticate.create_ws_token),
     path("api/user/repositories/", repositories_and_groups.user_repositories),
-    path("api/user/repositories/reload/", repositories_and_groups.user_repositories_reload),
+    path(
+        "api/user/repositories/reload/",
+        repositories_and_groups.user_repositories_reload,
+    ),
     path("api/user/groups/", repositories_and_groups.user_groups_list),
     path("api/user/groups/<str:group_name>/", repositories_and_groups.user_group),
     path(

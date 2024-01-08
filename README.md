@@ -1,5 +1,30 @@
 # Overview
 
-GHREC simlifies the search for repositories on GitHub. Create a group of repositories you are interested in, the service will find users who have starred them, and then pick and rank repositories that have also been starred by those users. This can be useful when searching for repositories on a specific topic of interest to you (especially if the topic is very narrow): find a few, the rest will be found for you. I felt the need for this project when I was looking for new articles, datasets, and repositories for a specific problem in computer vision.
+GHREC recommends you GitHub repositories that are similar to yours. The project can help you find hidden gems.
 
-If you do not want to use the whole service, but only the scripts for searching repositories, check [tasks.py](/recommendations/tasks.py) and [github_gql_queries.py](/recommendations/github_gql_queries.py).
+1. Create a group of repositories that share a common theme
+2. GHREC will find all the people who have starred these repositories.
+3. Based on those people's stars, you will get a ranked list of repositories that are similar to the repositories in your group. 
+4. If you wish, you can update the group with the repositories you found and return to step 1 
+
+If you do not want to use the whole service, but only the scripts for finding repositories, check [tasks.py](/recommendations/tasks.py) and [github_gql_queries.py](/recommendations/github_gql_queries.py).
+
+## Installation (Ubuntu)
+
+Install [docker compose](https://docs.docker.com/compose/install/) and git.
+
+Clone the repository
+```
+git clone https://github.com/Gorogorov/ghrec
+cd ghrec
+```
+(Optional) Change the service parameters in the config
+```
+vim .env.public
+```
+Build and run docker containers
+```
+sudo docker-compose --env-file ./.env.public build
+sudo docker-compose --env-file ./.env.public up
+```
+Go to http://localhost:8080/

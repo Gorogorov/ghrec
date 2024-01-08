@@ -23,12 +23,13 @@ function WebSocketClient(props){
     useEffect(()=>{
         recommendationsService.getWsToken(
         ).then((response)=>{
+            response = response.data;
+            const URL_WS_PROTOCOL = (window.location.protocol === 
+                    'https:' ? 'wss' : 'ws') + '://';
+            const URL_WS_HOST = `${window.location.hostname}`;
+            const URL_WS_PATH = `/ws/`;
             const URL_QUERY = `?token=${response["token"]}`;
-            const URL_WS_HOST = 'localhost:8001';
-            const URL_WS_PATH = `/api/ws/`;
-            const URL_WS = (window.location.protocol === 
-                'https:' ? 'wss' : 'ws') + '://' +
-                URL_WS_HOST + URL_WS_PATH + URL_QUERY;
+            const URL_WS = URL_WS_PROTOCOL + URL_WS_HOST + URL_WS_PATH + URL_QUERY;
 
             socket.current = new WebSocket(URL_WS);
 
