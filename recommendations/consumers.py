@@ -19,8 +19,7 @@ def get_task_id(user_id, group_name):
 
     try:
         ghuser = GHUser.objects.get(pk=user_id)
-        ghgroup = GHRepositoryGroup.objects.get(user=ghuser,
-                                            name=group_name)
+        ghgroup = GHRepositoryGroup.objects.get(user=ghuser, name=group_name)
     except GHRepositoryGroup.DoesNotExist:
         raise ValueError("Requested group does not exist.")
     except GHUser.DoesNotExist:
@@ -51,34 +50,31 @@ class ProgressConsumer(AsyncWebsocketConsumer):
                 raise ValueError("Specify message type.")
 
             if task_type == "group_task_subscribe":
-                task_id = await get_task_id(self.scope["user"].id, msg_json["group_name"])
+                task_id = await get_task_id(
+                    self.scope["user"].id, msg_json["group_name"]
+                )
                 task_id = str(task_id)
 
-                await self.channel_layer.group_add(
-                    task_id,
-                    self.channel_name
-                )
+                await self.channel_layer.group_add(task_id, self.channel_name)
 
             if task_type == "check_task_completion":
-                task_id = await get_task_id(self.scope["user"].id, msg_json["group_name"])
+                task_id = await get_task_id(
+                    self.scope["user"].id, msg_json["group_name"]
+                )
                 task_id = str(task_id)
                 group_task_data = Progress(AsyncResult(task_id)).get_info()
                 group_task_data["group_name"] = msg_json["group_name"]
                 group_task_data["type"] = "update_task_progress"
 
                 await self.channel_layer.group_send(
-                    task_id,
-                    {
-                        "type": "update_task_progress",
-                        "data": group_task_data
-                    }
+                    task_id, {"type": "update_task_progress", "data": group_task_data}
                 )
 
         except ValueError as err:
             await self.send(json.dumps({"error": err}))
 
     async def update_task_progress(self, event):
-        data = event['data']
+        data = event["data"]
         data["type"] = "update_task_progress"
 
         await self.send(text_data=json.dumps(data))

@@ -11,11 +11,7 @@ from rest_framework import status
 from django.core.paginator import Paginator
 from celery.result import AsyncResult
 
-from recommendations.models import (
-    GHUser,
-    GHRepositoryGroup,
-    GHRepository
-)
+from recommendations.models import GHUser, GHRepositoryGroup, GHRepository
 from recommendations.serializers import (
     RepositoryGroupSerializer,
     DynamicRepositorySerializer,
@@ -51,7 +47,7 @@ def user_repositories(request):
         # reps_task = AsyncResult(str(ghuser.retrieve_reps_task_id),
         #                   app=cltask_user_starred_repositories)
         # reps_task.get()
-        
+
         reps_per_page = 30
         response_data = {}
 
@@ -98,9 +94,7 @@ def user_repositories_reload(request):
         )
 
     if request.method == "GET":
-        GHRepository.users.through.objects.filter(
-            ghuser_id=ghuser
-        ).delete()
+        GHRepository.users.through.objects.filter(ghuser_id=ghuser).delete()
         task_result = cltask_user_starred_repositories.delay(
             ghuser.username, ghuser.github_username
         )

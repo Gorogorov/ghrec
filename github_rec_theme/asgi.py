@@ -14,15 +14,18 @@ django_asgi_app = get_asgi_application()
 from recommendations.consumers import ProgressConsumer
 from recommendations.ws_auth_middleware import TokenAuthMiddleware
 
-application = ProtocolTypeRouter({
-    "websocket": #AllowedHostsOriginValidator(
-        TokenAuthMiddleware(
-            URLRouter([
-                path(
-                    "ws/",
-                    ProgressConsumer.as_asgi(),
-                ),
-            ])
+application = ProtocolTypeRouter(
+    {
+        "websocket": TokenAuthMiddleware(  # AllowedHostsOriginValidator(
+            URLRouter(
+                [
+                    path(
+                        "ws/",
+                        ProgressConsumer.as_asgi(),
+                    ),
+                ]
+            )
         )
-    #),
-})
+        # ),
+    }
+)

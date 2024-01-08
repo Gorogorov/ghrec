@@ -111,7 +111,9 @@ def recommendations_compute(request, group_name):
         )
 
     if request.method == "GET":
-        task_result = cltask_starred_repositories_of_stargazers.delay(request.user.id, group_name)
+        task_result = cltask_starred_repositories_of_stargazers.delay(
+            request.user.id, group_name
+        )
         ghgroup.get_recs_task_id = task_result.id
         ghgroup.save()
         logger.info(

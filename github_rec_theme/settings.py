@@ -10,18 +10,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = environ.get('DJANGO_SECRET_KEY',
-        default = "django-insecure-q@mmfax73x=xww2t1v2+1lu(0ins(@71wznu-9_*98!)jb=lr4")
+SECRET_KEY = environ.get(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-q@mmfax73x=xww2t1v2+1lu(0ins(@71wznu-9_*98!)jb=lr4",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = int(environ.get('DEBUG', default = 1))
+DEBUG = int(environ.get("DEBUG", default=1))
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = environ.get('ALLOWED_HOSTS', '*').split(' ')
+ALLOWED_HOSTS = environ.get("ALLOWED_HOSTS", "*").split(" ")
 
 if "CSRF_TRUSTED_ORIGINS" in environ:
-    CSRF_TRUSTED_ORIGINS = environ.get('CSRF_TRUSTED_ORIGINS').split(' ')
+    CSRF_TRUSTED_ORIGINS = environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
 
 
 # Application definition
@@ -89,10 +91,7 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": True,
         },
-        "daphne": {
-            "handlers": ["rotfile_debug"],
-            "level": "INFO"
-        },
+        "daphne": {"handlers": ["rotfile_debug"], "level": "INFO"},
     },
 }
 
@@ -130,18 +129,14 @@ WSGI_APPLICATION = "github_rec_theme.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": environ.get("POSTGRES_ENGINE",
-                              default="django.db.backends.postgresql"),
-        "NAME": environ.get("POSTGRES_DB",
-                            default="ghrec"),
-        "USER": environ.get("POSTGRES_USER",
-                            default="ghrec_admin"),
-        "PASSWORD": environ.get("POSTGRES_PASSWORD",
-                            default="ghrec_admin"),
-        "HOST": environ.get("POSTGRES_HOST",
-                            default="postgres"),
-        "PORT": environ.get("POSTGRES_PORT",
-                            default="5432"),
+        "ENGINE": environ.get(
+            "POSTGRES_ENGINE", default="django.db.backends.postgresql"
+        ),
+        "NAME": environ.get("POSTGRES_DB", default="ghrec"),
+        "USER": environ.get("POSTGRES_USER", default="ghrec_admin"),
+        "PASSWORD": environ.get("POSTGRES_PASSWORD", default="ghrec_admin"),
+        "HOST": environ.get("POSTGRES_HOST", default="postgres"),
+        "PORT": environ.get("POSTGRES_PORT", default="5432"),
     }
 }
 
